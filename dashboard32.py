@@ -17,6 +17,7 @@ dfkabkot = df[df['Wilayah'] != 'Provinsi Jawa Barat']
 dfkabkot2022 = dfkabkot[dfkabkot['Tahun'] == '2022']
 tahun = df['Tahun'].unique()
 variabel = dfjabar.columns.to_list()
+wilayah = dfkabkot['Wilayah'].unique()
 
 def main():
     st.title("Indikator Makro Jawa Barat")
@@ -35,12 +36,29 @@ def main():
         fig = px.scatter(dfjabar, x='Tahun', y=pilihan_variabel, size_max=60)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
+    # Kabkot
+    st.warning("Series Indikator Makro Kabupaten/Kota, Silakan memilih Wilayah dan Indikator")
+    pilih_kabkot = st.selectbox("Pilih Wilayah:", wilayah, key='wilayah')
+    
+    kol1, kol2, kol3 = st.columns(3)
+    
+    with kol1:
+        pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol1kabkot')
+        st.bar_chart(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel)
+    with kol2:
+        pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol2kabkot')
+        st.line_chart(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel)
+    with kol3:
+        pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol3kabkot')
+        fig = px.scatter(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel, size_max=60)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    
     st.subheader("Jawa Barat menurut Kabupaten Kota")
     st.info("Silakan Memilih Tahun Data")
     kol1, kol2 = st.columns(2)
     with kol1:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='pie')
-        fig = px.pie(dfkabkot2022, values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
+        fig = px.pie(dfkabkot, values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     with kol2:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='scatter')
@@ -78,6 +96,7 @@ def main():
         with st.expander("Metadata"):
             stc.iframe('https://sirusa.web.bps.go.id/', height=500)
             st.link_button(label='SiRuSa', url='https://sirusa.bps.go.id')
+            st.link_button(label='Indah', url='https://indah.bps.go.id/standar-data-statistik-nasional')
     with kol2:        
         with st.expander("Sumber Data"):
             stc.iframe('https://jabar.bps.go.id/site/pilihdata.html', height=500)
