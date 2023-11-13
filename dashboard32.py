@@ -25,13 +25,13 @@ def main():
     kol1, kol2, kol3 = st.columns(3)
     
     with kol1:
-        pilihan_variabel = st.selectbox("Pilih Indikator:", variabel, key='kol1jabar')
+        pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol1jabar')
         st.bar_chart(dfjabar, x='Tahun', y=pilihan_variabel)
     with kol2:
         pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol2jabar')
         st.line_chart(dfjabar, x='Tahun', y=pilihan_variabel)
     with kol3:
-        pilihan_variabel = st.selectbox("Pilih Indikator:", variabel, key='kol3jabar')
+        pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol3jabar')
         fig = px.scatter(dfjabar, x='Tahun', y=pilihan_variabel, size_max=60)
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
