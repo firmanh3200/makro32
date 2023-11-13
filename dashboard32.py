@@ -58,7 +58,7 @@ def main():
     kol1, kol2 = st.columns(2)
     with kol1:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='pie')
-        fig = px.pie(dfkabkot, values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
+        fig = px.pie(dfkabkot[dfkabkot['Tahun'] == pilih_tahun], values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
         st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     with kol2:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='scatter')
