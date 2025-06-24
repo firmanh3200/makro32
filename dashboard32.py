@@ -33,8 +33,8 @@ def main():
         st.line_chart(dfjabar, x='Tahun', y=pilihan_variabel)
     with kol3:
         pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol3jabar')
-        fig = px.scatter(dfjabar, x='Tahun', y=pilihan_variabel, size_max=60)
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        fig1 = px.scatter(dfjabar, x='Tahun', y=pilihan_variabel, size_max=60)
+        st.plotly_chart(fig1, use_container_width=True)
     
     # Kabkot
     st.warning("Series Indikator Makro Kabupaten/Kota, Silakan memilih Wilayah dan Indikator")
@@ -50,22 +50,22 @@ def main():
         st.line_chart(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel)
     with kol3:
         pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol3kabkot')
-        fig = px.scatter(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel, size_max=60)
-        st.plotly_chart(fig, use_container_width=True)
+        fig2 = px.scatter(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel, size_max=60)
+        st.plotly_chart(fig2, use_container_width=True)
     
     st.subheader("Jawa Barat menurut Kabupaten Kota")
     st.info("Silakan Memilih Tahun Data")
     kol1, kol2 = st.columns(2)
     with kol1:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='pie')
-        fig = px.pie(dfkabkot[dfkabkot['Tahun'] == pilih_tahun], values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        fig3 = px.pie(dfkabkot[dfkabkot['Tahun'] == pilih_tahun], values='Penduduk', names='Wilayah', title=f"Distribusi Penduduk, {pilih_tahun}")
+        st.plotly_chart(fig3, use_container_width=True)
     with kol2:
         pilih_tahun = st.selectbox("Pilih tahun:", tahun, key='scatter')
 
         data_filter_tahun = df[df['Tahun'] == pilih_tahun]
 
-        fig = px.scatter(
+        fig4 = px.scatter(
             data_filter_tahun,
             x="pdrbperkapita",
             y="Usia Harapan Hidup (Tahun)",
@@ -76,7 +76,7 @@ def main():
             size_max=90,
             title=f"PDRB Perkapita - Usia Harapan Hidup, {pilih_tahun}",
         )
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        st.plotly_chart(fig4, use_container_width=True)
     # with kol3:
     #     st.write("Jumlah Penduduk Miskin 2022 (000)")
     #     st.bar_chart(dfkabkot2022, x='Wilayah', y='Jumlah Penduduk Miskin (000)')
