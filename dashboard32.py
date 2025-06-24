@@ -51,7 +51,7 @@ def main():
     with kol3:
         pilihan_variabel = st.multiselect("Pilih Indikator:", variabel, key='kol3kabkot')
         fig = px.scatter(dfkabkot[dfkabkot['Wilayah'] == pilih_kabkot], x='Tahun', y=pilihan_variabel, size_max=60)
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
     
     st.subheader("Jawa Barat menurut Kabupaten Kota")
     st.info("Silakan Memilih Tahun Data")
