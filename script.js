@@ -1,74 +1,66 @@
-const csvUrl = 'URL_FILE_CSV_ANDA'; // Ganti dengan URL file CSV Anda di GitHub
+// This file can be used for any interactive features or dynamic data loading.
+// For now, it's just a placeholder to demonstrate the setup.
 
-async function fetchData() {
-  try {
-    const response = await fetch(csvUrl);
-    const csvData = await response.text();
-    return processData(csvData);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
-  }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Dashboard script loaded!');
 
-function processData(csvData) {
-  const lines = csvData.split('\n');
-  const headers = lines[0].split(','); // Asumsi header ada di baris pertama
-  const data = [];
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
 
-  // Mulai dari baris kedua (indeks 1) untuk data
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',');
-    if (values.length === headers.length) {
-      const entry = {};
-      for (let j = 0; j < headers.length; j++) {
-        entry[headers[j].trim()] = values[j].trim(); // trim untuk menghilangkan whitespace
-      }
-      data.push(entry);
-    }
-  }
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        menuToggle.classList.toggle('active'); // Toggle class on button for 'X' animation
 
-  // Ambil tahun dan bulan dari data baris pertama (data terbaru)
-  if (data.length > 0) {
-    const latestYear = data[0].tahun;
-    const latestMonth = data[0].bulan;
+        // Handle overlay
+        if (navLinks.classList.contains('active')) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.classList.add('menu-overlay');
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                overlay.remove();
+            });
+        } else {
+            const existingOverlay = document.querySelector('.menu-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+        }
+    });
 
-    // Filter data untuk hanya mendapatkan entri yang sesuai dengan tahun dan bulan terbaru
-    const latestData = data.filter(item => item.tahun === latestYear && item.bulan === latestMonth);
-    return latestData;
+    // Close menu if a link is clicked (for single page apps with hash links)
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                const existingOverlay = document.querySelector('.menu-overlay');
+                if (existingOverlay) {
+                    existingOverlay.remove();
+                }
+            }
+        });
+    });
 
-  } else {
-    console.warn('No data found in CSV file.');
-    return null;
-  }
-}
+    // Example: You could add functionality here to update card values dynamically
+    // or fetch data from an API.
 
-function updateDashboard(latestData) {
-  if (!latestData || latestData.length === 0) {
-    console.warn('No data found for the latest month.');
-    return;
-  }
+    // const updateMetrics = () => {
+    //     // Simulate fetching new data
+    //     const newSales = (Math.random() * 10000000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    //     const newUsers = Math.floor(Math.random() * 2000);
+    //     const activeProjects = Math.floor(Math.random() * 100);
+    //     const supportTickets = Math.floor(Math.random() * 20);
 
-  const inflasiMtm = latestData.find(item => item.indikator === 'Inflasi MtM')?.nilai || '-';
-  const inflasiYoY = latestData.find(item => item.indikator === 'Inflasi YoY')?.nilai || '-';
-  const inflasiYtd = latestData.find(item => item.indikator === 'Inflasi YtD')?.nilai || '-';
-  const ihk = latestData.find(item => item.indikator === 'Indeks Harga Konsumen')?.nilai || '-';
+    //     document.querySelector('.metric-card:nth-child(1) .card-value').textContent = `Rp ${newSales}`;
+    //     document.querySelector('.metric-card:nth-child(2) .card-value').textContent = newUsers;
+    //     document.querySelector('.metric-card:nth-child(3) .card-value').textContent = activeProjects;
+    //     document.querySelector('.metric-card:nth-child(4) .card-value').textContent = supportTickets;
+    // };
 
-  document.getElementById('inflasi-mtm').textContent = inflasiMtm;
-  document.getElementById('inflasi-yoy').textContent = inflasiYoY;
-  document.getElementById('inflasi-ytd').textContent = inflasiYtd;
-  document.getElementById('ihk').textContent = ihk;
-
-    // Dapatkan tahun dan bulan dari data pertama
-    const year = latestData[0].tahun;
-    const month = latestData[0].bulan;
-    document.getElementById('last-updated').textContent = `Data terakhir diperbarui: ${year}-${month}`;
-}
-
-// Panggil fungsi untuk mengambil dan menampilkan data saat halaman dimuat
-window.onload = async () => {
-  const latestData = await fetchData();
-  if (latestData) {
-    updateDashboard(latestData);
-  }
-};
+    // // Update metrics every 5 seconds (for demonstration)
+    // setInterval(updateMetrics, 5000);
+    // updateMetrics(); // Initial update
+});
