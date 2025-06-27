@@ -9,6 +9,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const metricCards = document.querySelectorAll('.metric-card');
 
+    // Function to render charts
+    const renderChart = (chartContainer, lineColor, baseValue, variance) => {
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const data = labels.map((_, i) => {
+            return parseFloat((baseValue + (Math.random() - 0.5) * variance * (i / labels.length + 0.5)).toFixed(2));
+        });
+
+        const options = {
+            chart: {
+                type: 'line',
+                height: '100%',
+                width: '100%',
+                toolbar: {
+                    show: false // Hide chart toolbar (zoom, pan, download, etc.)
+                },
+                sparkline: { // Use sparkline mode for minimal chart
+                    enabled: true
+                }
+            },
+            series: [{
+                data: data
+            }],
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            colors: [lineColor],
+            tooltip: {
+                enabled: true,
+                theme: 'dark',
+                x: {
+                    show: true,
+                    formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
+                        return w.globals.labels[dataPointIndex];
+                    }
+                },
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2);
+                    }
+                }
+            },
+            grid: {
+                show: false, // Hide grid lines
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                }
+            },
+            xaxis: {
+                categories: labels,
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            }
+        };
+
+        // Use the globally available ApexCharts constructor
+        new ApexCharts(chartContainer, options).render();
+    };
+
+    // Initialize all charts initially (even if hidden in accordion, ApexCharts handles this fine)
     metricCards.forEach((card) => {
         const chartContainer = card.querySelector('.chart-container > div'); // Select the div element which is the actual chart container
         const cardTitleElement = card.querySelector('.card-title');
@@ -50,7 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     baseValue = 35.8; variance = 2.0; break;
                 case 'chart13': // Nilai Ekspor (Miliar USD)
                     baseValue = 2.5; variance = 0.3; break;
-                case 'chart14': // Nilai Impor (Miliar USD)
+                case 'chart14': // Kum Ekspor (Miliar USD)
+                    baseValue = 1.8; variance = 0.2; break;
+                case 'chart15': // Nilai Impor (Miliar USD)
                     baseValue = 1.8; variance = 0.2; break;
                 case 'chart16': // Neraca Perdagangan
                     baseValue = 0.7; variance = 0.5; break; // Approx. Ekspor - Impor
@@ -63,86 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 default:
                     baseValue = 100; variance = 5;
             }
-
-            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-            const data = labels.map((_, i) => {
-                return parseFloat((baseValue + (Math.random() - 0.5) * variance * (i / labels.length + 0.5)).toFixed(2));
-            });
-
-            const options = {
-                chart: {
-                    type: 'line',
-                    height: '100%',
-                    width: '100%',
-                    toolbar: {
-                        show: false // Hide chart toolbar (zoom, pan, download, etc.)
-                    },
-                    sparkline: { // Use sparkline mode for minimal chart
-                        enabled: true
-                    }
-                },
-                series: [{
-                    data: data
-                }],
-                stroke: {
-                    curve: 'smooth',
-                    width: 2
-                },
-                colors: [lineColor],
-                tooltip: {
-                    enabled: true,
-                    theme: 'dark',
-                    x: {
-                        show: true,
-                        formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-                            return w.globals.labels[dataPointIndex];
-                        }
-                    },
-                    y: {
-                        formatter: function (val) {
-                            return val.toFixed(2);
-                        }
-                    }
-                },
-                grid: {
-                    show: false, // Hide grid lines
-                    padding: {
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                    }
-                },
-                xaxis: {
-                    categories: labels,
-                    labels: {
-                        show: false
-                    },
-                    axisBorder: {
-                        show: false
-                    },
-                    axisTicks: {
-                        show: false
-                    }
-                },
-                yaxis: {
-                    labels: {
-                        show: false
-                    },
-                    axisBorder: {
-                        show: false
-                    },
-                    axisTicks: {
-                        show: false
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                }
-            };
-
-            // Use the globally available ApexCharts constructor
-            new ApexCharts(chartContainer, options).render();
+            renderChart(chartContainer, lineColor, baseValue, variance);
         }
     });
 
@@ -185,21 +192,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Example of dynamic data loading - currently commented out from previous instructions
-    // const updateMetrics = () => {
-    //     // Simulate fetching new data
-    //     const newSales = (Math.random() * 10000000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    //     const newUsers = Math.floor(Math.random() * 2000);
-    //     const activeProjects = Math.floor(Math.random() * 100);
-    //     const supportTickets = Math.floor(Math.random() * 20);
+    // Accordion functionality
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
 
-    //     document.querySelector('.metric-card:nth-child(1) .card-value').textContent = `Rp ${newSales}`;
-    //     document.querySelector('.metric-card:nth-child(2) .card-value').textContent = newUsers;
-    //     document.querySelector('.metric-card:nth-child(3) .card-value').textContent = activeProjects;
-    //     document.querySelector('.metric-card:nth-child(4) .card-value').textContent = supportTickets;
-    // };
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionBody = header.nextElementSibling; // Get the accordion-body right after the header
 
-    // // Update metrics every 5 seconds (for demonstration)
-    // setInterval(updateMetrics, 5000);
-    // updateMetrics(); // Initial update
+            // Toggle active class on the header
+            header.classList.toggle('active');
+
+            // Toggle active class on the body
+            if (accordionBody.classList.contains('active')) {
+                accordionBody.style.maxHeight = '0';
+                accordionBody.classList.remove('active');
+            } else {
+                accordionBody.style.maxHeight = accordionBody.scrollHeight + 'px';
+                accordionBody.classList.add('active');
+            }
+        });
+    });
 });
