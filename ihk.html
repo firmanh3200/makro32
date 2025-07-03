@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
 </head>
 <body>
@@ -30,50 +30,50 @@
     <main id="dashboard-content">
         <!-- BARIS INFLASI -->
         <section class="metrics-grid-container">
-            <div class="metric-card card-color-1">
+            <div class="metric-card card-color-1" id="ihk-card">
                 <h3 class="card-title">I H K</h3>
                 <div class="card-data-row">
                     <div class="text-data-col">
-                        <p class="card-value">108,38</p>
-                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjQyIzIzI=/ihk-menurut-kelompok-pengeluaran--persen-.html" target="_blank">Mei 2025</a></p>
+                        <p class="card-value" id="ihk-value">...</p>
+                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjQyIzIzI=/ihk-menurut-kelompok-pengeluaran--persen-.html" target="_blank" id="ihk-description">...</a></p>
                     </div>
                     <div class="chart-container"><div id="chart1"></div></div>
                 </div>
             </div>
-            <div class="metric-card card-color-2">
+            <div class="metric-card card-color-2" id="inflasi-mtm-card">
                 <h3 class="card-title">Inflasi MtM</h3>
                 <div class="card-data-row">
                     <div class="text-data-col">
-                        <p class="card-value">-0,32%</p>
-                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MSMy/inflasi-bulanan-menurut-kelompok-pengeluaran----m-to-m---persen-.html" target="_blank">Mei 2025</a></p>
+                        <p class="card-value" id="inflasi-mtm-value">...</p>
+                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MSMy/inflasi-bulanan-menurut-kelompok-pengeluaran----m-to-m---persen-.html" target="_blank" id="inflasi-mtm-description">...</a></p>
                     </div>
                     <div class="chart-container"><div id="chart2"></div></div>
                 </div>
             </div>
-            <div class="metric-card card-color-3">
+            <div class="metric-card card-color-3" id="inflasi-yoy-card">
                 <h3 class="card-title">Inflasi YoY</h3>
                 <div class="card-data-row">
                     <div class="text-data-col">
-                        <p class="card-value">1,47%</p>
-                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/ODAyIzI=/inflasi-year-on-year-menurut-kelompok-pengeluaran----y-on-y---persen-.html" target="_blank">Mei 2025</a></p>
+                        <p class="card-value" id="inflasi-yoy-value">...</p>
+                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/ODAyIzI=/inflasi-year-on-year-menurut-kelompok-pengeluaran----y-on-y---persen-.html" target="_blank" id="inflasi-yoy-description">...</a></p>
                     </div>
                     <div class="chart-container"><div id="chart3"></div></div>
                 </div>
             </div>
-            <div class="metric-card card-color-4">
+            <div class="metric-card card-color-4" id="inflasi-ytd-card">
                 <h3 class="card-title">Inflasi YtD</h3>
                 <div class="card-data-row">
                     <div class="text-data-col">
-                        <p class="card-value">0,98%</p>
-                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/ODE2IzI=/inflasi-year-to-date-menurut-kelompok-pengeluaran----y-to-d---persen-.html" target="_blank">Mei 2025</a></p>
+                        <p class="card-value" id="inflasi-ytd-value">...</p>
+                        <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/ODE2IzI=/inflasi-year-to-date-menurut-kelompok-pengeluaran----y-to-d---persen-.html" target="_blank" id="inflasi-ytd-description">...</a></p>
                     </div>
                     <div class="chart-container"><div id="chart4"></div></div>
                 </div>
             </div>
         </section>
-        
+
         <div class="metrics-grid-separator"></div>
-        
+
         <!-- BARIS NTP -->
         <section class="accordion-item">
             <button class="accordion-header">
@@ -81,44 +81,44 @@
                 <span class="accordion-icon"></span>
             </button>
             <div class="accordion-body">
-                <div class="metrics-grid-separator"></div> 
+                <div class="metrics-grid-separator"></div>
                 <section class="metrics-grid-container">
-                    <div class="metric-card card-color-5">
+                    <div class="metric-card card-color-5" id="ntp-card">
                         <h3 class="card-title">N T P</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">111,87</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank">Mei 2025</a></p>
+                                <p class="card-value" id="ntp-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank" id="ntp-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart5"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-6">
+                    <div class="metric-card card-color-6" id="ntup-card">
                         <h3 class="card-title">N T U P</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">114,84</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank">Mei 2025</a></p>
+                                <p class="card-value" id="ntup-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank" id="ntup-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart6"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-7">
+                    <div class="metric-card card-color-7" id="indeks-diterima-card">
                         <h3 class="card-title">Indeks Diterima</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">135,76</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank">Mei 2025</a></p>
+                                <p class="card-value" id="indeks-diterima-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank" id="indeks-diterima-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart7"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-8">
+                    <div class="metric-card card-color-8" id="indeks-dibayar-card">
                         <h3 class="card-title">Indeks Dibayar</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">121,36</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank">Mei 2025</a></p>
+                                <p class="card-value" id="indeks-dibayar-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NzQxIzI=/it--ib--dan-ntp-menurut-subkelompok-pengeluaran--2018-100---persen-.html" target="_blank" id="indeks-dibayar-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart8"></div></div>
                         </div>
@@ -129,7 +129,7 @@
         </section>
 
         <div class="metrics-grid-separator"></div>
-        
+
         <!-- BARIS PARIWISATA -->
         <section class="accordion-item">
             <button class="accordion-header">
@@ -139,42 +139,42 @@
             <div class="accordion-body">
                 <div class="metrics-grid-separator"></div>
                 <section class="metrics-grid-container">
-                    <div class="metric-card card-color-9">
+                    <div class="metric-card card-color-9" id="tpk-card">
                         <h3 class="card-title">T P K</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">38,07%</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="tpk-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank" id="tpk-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart9"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-10">
+                    <div class="metric-card card-color-10" id="tpk-bintang-card">
                         <h3 class="card-title">TPK Bintang</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">46,37%</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="tpk-bintang-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank" id="tpk-bintang-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart10"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-11">
+                    <div class="metric-card card-color-11" id="tpk-non-bintang-card">
                         <h3 class="card-title">TPK Non Bintang</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">25,76%</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="tpk-non-bintang-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjE2IzI=/tingkat-penghunian-kamar-hotel--persen-.html" target="_blank" id="tpk-non-bintang-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart11"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-12">
+                    <div class="metric-card card-color-12" id="kunjungan-wisman-card">
                         <h3 class="card-title">Kunjungan Wisman</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">334</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NDAwIzI=/jumlah-wisatawan-mancanegara-menurut-negara-asal--jiwa-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="kunjungan-wisman-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/NDAwIzI=/jumlah-wisatawan-mancanegara-menurut-negara-asal--jiwa-.html" target="_blank" id="kunjungan-wisman-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart12"></div></div>
                         </div>
@@ -185,7 +185,7 @@
         </section>
 
         <div class="metrics-grid-separator"></div>
-        
+
         <!-- BARIS TRANSPORTASI -->
         <section class="accordion-item">
             <button class="accordion-header">
@@ -195,32 +195,32 @@
             <div class="accordion-body">
                 <div class="metrics-grid-separator"></div>
                 <section class="metrics-grid-container">
-                    <div class="metric-card card-color-13">
+                    <div class="metric-card card-color-13" id="penumpang-udara-internasional-card">
                         <h3 class="card-title">Penumpang Udara Internasional</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">994</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/statictable/2021/02/25/1154/perkembangan-ekspor-impor-jawa-barat.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="penumpang-udara-internasional-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/statictable/2021/02/25/1154/perkembangan-ekspor-impor-jawa-barat.html" target="_blank" id="penumpang-udara-internasional-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart13"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-14">
+                    <div class="metric-card card-color-14" id="penumpang-udara-domestik-card">
                         <h3 class="card-title">Penumpang Udara Domestik</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">5.434</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/statictable/2021/02/25/1154/perkembangan-ekspor-impor-jawa-barat.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="penumpang-udara-domestik-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/statictable/2021/02/25/1154/perkembangan-ekspor-impor-jawa-barat.html" target="_blank" id="penumpang-udara-domestik-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart14"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-15">
+                    <div class="metric-card card-color-15" id="penumpang-kereta-card">
                         <h3 class="card-title">Penumpang Kereta (Juta)</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">2,48</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjQyIzIzI=/ihk-menurut-kelompok-pengeluaran--persen-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="penumpang-kereta-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MjQyIzIzI=/ihk-menurut-kelompok-pengeluaran--persen-.html" target="_blank" id="penumpang-kereta-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart15"></div></div>
                         </div>
@@ -241,42 +241,42 @@
             <div class="accordion-body">
                 <div class="metrics-grid-separator"></div>
                 <section class="metrics-grid-container">
-                    <div class="metric-card card-color-16">
+                    <div class="metric-card card-color-16" id="nilai-ekspor-card">
                         <h3 class="card-title">Nilai Ekspor (Miliar USD)</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">2,76</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MzU3IzI=/nilai-ekspor-menurut-sektor--ribu-usd-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="nilai-ekspor-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MzU3IzI=/nilai-ekspor-menurut-sektor--ribu-usd-.html" target="_blank" id="nilai-ekspor-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart16"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-17">
+                    <div class="metric-card card-color-17" id="kumulatif-ekspor-card">
                         <h3 class="card-title">Kumulatif Ekspor (Miliar USD)</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">12,08</p>
-                                <p class="card-description"><a href="http://asik.32net.id:8602" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="kumulatif-ekspor-value">...</p>
+                                <p class="card-description"><a href="http://asik.32net.id:8602" target="_blank" id="kumulatif-ekspor-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart17"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-18">
+                    <div class="metric-card card-color-18" id="nilai-impor-card">
                         <h3 class="card-title">Nilai Impor (Miliar USD)</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">1,04</p>
-                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MzYwIzI=/nilai-impor-menurut-sektor--ribu-usd-.html" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="nilai-impor-value">...</p>
+                                <p class="card-description"><a href="https://jabar.bps.go.id/id/statistics-table/2/MzYwIzI=/nilai-impor-menurut-sektor--ribu-usd-.html" target="_blank" id="nilai-impor-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart18"></div></div>
                         </div>
                     </div>
-                    <div class="metric-card card-color-19">
+                    <div class="metric-card card-color-19" id="kumulatif-impor-card">
                         <h3 class="card-title">Kumulatif Impor (Miliar USD)</h3>
                         <div class="card-data-row">
                             <div class="text-data-col">
-                                <p class="card-value">3,98</p>
-                                <p class="card-description"><a href="http://asik.32net.id:8602" target="_blank">April 2025</a></p>
+                                <p class="card-value" id="kumulatif-impor-value">...</p>
+                                <p class="card-description"><a href="http://asik.32net.id:8602" target="_blank" id="kumulatif-impor-description">...</a></p>
                             </div>
                             <div class="chart-container"><div id="chart19"></div></div>
                         </div>
@@ -295,10 +295,10 @@
     </footer>
     <!-- WA Chat -->
     <div class="whatsapp-chat">
-    <a href="https://wa.me/6285179928832" target="_blank">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" width="50px" height="50px" alt="WhatsApp Chat">
-    </a>
-  </div>
+        <a href="https://wa.me/6285179928832" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" width="50px" height="50px" alt="WhatsApp Chat">
+        </a>
+    </div>
     <br>
     <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="skrip.js"></script>
