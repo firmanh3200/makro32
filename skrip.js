@@ -1,14 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Dashboard script loaded!');
 
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?output=csv"; // Ganti dengan URL CSV Anda!
+    const csvUrls = {
+        ihk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=0&single=true&output=csv",
+        ntp: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=2009702541&single=true&output=csv",
+        pariwisata: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=1368898419&single=true&output=csv",
+        transportasi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=1693098622&single=true&output=csv",
+        exim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=826169716&single=true&output=csv"
+    };
 
-    const metricCards = document.querySelectorAll('.metric-card');
+    let ihkData, ntpData, pariwisataData, transportasiData, eximData; // Store fetched data
 
     // Function to render charts with updated data
     const renderChart = (chartContainer, lineColor, chartData) => {
-        const labels = chartData.slice(1).map(row => row[0]); // Extract dates, skipping the header row
-        const data = chartData.slice(1).map(row => parseFloat(row[1])); // Extract values
+        const labels = chartData.slice(1).map(row => row[0]);
+        const data = chartData.slice(1).map(row => parseFloat(row[1]));
 
         const options = {
             chart: {
@@ -95,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.length === headers.length) {
                 const entry = {};
                 for (let j = 0; j < headers.length; j++) {
-                    entry[headers[j].trim()] = data[j].trim(); // Remove extra spaces
+                    entry[headers[j].trim()] = data[j].trim();
                 }
                 result.push(entry);
             }
@@ -103,195 +109,205 @@ document.addEventListener('DOMContentLoaded', () => {
         return result;
     };
 
-    // Function to fetch and update data from CSV
-    const fetchDataAndUpdate = async () => {
+    // Function to fetch CSV data
+    const fetchCSVData = async (url) => {
         try {
-            const response = await fetch(csvUrl);
-            const csvText = await response.text(); // Get the response as text
-
-            const parsedData = parseCSV(csvText); // Parse the CSV data
-            console.log(parsedData);
-
-            // Now update the dashboard with the fetched data
-            updateDashboard(parsedData);
-
+            const response = await fetch(url);
+            const csvText = await response.text();
+            return parseCSV(csvText);
         } catch (error) {
-            console.error("Error fetching or parsing CSV data:", error);
+            console.error("Error fetching CSV data:", error);
+            return null;
         }
     };
+
+    // Function to fetch all CSV data and then update the dashboard
+    const fetchAllDataAndUpdate = async () => {
+        ihkData = await fetchCSVData(csvUrls.ihk);
+        ntpData = await fetchCSVData(csvUrls.ntp);
+        pariwisataData = await fetchCSVData(csvUrls.pariwisata);
+        transportasiData = await fetchCSVData(csvUrls.transportasi);
+        eximData = await fetchCSVData(csvUrls.exim);
+
+        // Only update the dashboard if all data has been fetched successfully
+        if (ihkData && ntpData && pariwisataData && transportasiData && eximData) {
+            updateDashboard();
+        } else {
+            console.error("Failed to fetch all data. Dashboard update aborted.");
+        }
+    };
+
     // Function to update the dashboard with the fetched data
-    const updateDashboard = (data) => {
-        // Example: Update IHK card with data from "ihk" sheet
-        if (data && data.length > 0) {
-            const ihkData = data.slice(0,6); // get data from the last 6 months
-            const ihkCard = document.querySelector('.metric-card.card-color-1'); // Adjust selector if needed
-
+    const updateDashboard = () => {
+        // Update IHK card
+        if (ihkData && ihkData.length > 0) {
+            const ihkCard = document.getElementById('ihk-card');
             if (ihkCard) {
-                // Update value and description
-                ihkCard.querySelector('.card-value').textContent = ihkData[0]['IHK']; // Assuming the latest value is in the first row, "IHK" column
-                ihkCard.querySelector('.card-description a').textContent = ihkData[0]['Bulan']; // Assuming the latest date is in the first row, "Bulan" column
+                const ihkValueElement = document.getElementById('ihk-value');
+                const ihkDescriptionElement = document.getElementById('ihk-description');
 
-                // Update chart
+                ihkValueElement.textContent = ihkData[1][1];
+                ihkDescriptionElement.textContent = ihkData[1][0];
+
                 const chartContainer = ihkCard.querySelector('.chart-container > div');
                 const cardTitleElement = ihkCard.querySelector('.card-title');
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
-
-                const chartData = ihkData.map(item => [item['Bulan'], item['IHK']]); // create array of arrays
+                const chartData = ihkData.slice(1).map(row => [row[0], row[1]]);
 
                 if (chartContainer) {
                     renderChart(chartContainer, lineColor, chartData);
                 }
             }
         }
-        // Repeat similar blocks for other metric cards and sheets
-        if (data && data.length > 0) {
-            const ntpData = data.slice(0,6);
-            const ntpCard = document.querySelector('.metric-card.card-color-5');
 
+        // Update Inflasi MtM card
+        if (ihkData && ihkData.length > 0) {
+            const inflasiMtmCard = document.getElementById('inflasi-mtm-card');
+            if (inflasiMtmCard) {
+                const inflasiMtmValueElement = document.getElementById('inflasi-mtm-value');
+                const inflasiMtmDescriptionElement = document.getElementById('inflasi-mtm-description');
+
+                inflasiMtmValueElement.textContent = ihkData[1][2];
+                inflasiMtmDescriptionElement.textContent = ihkData[1][0];
+
+                const chartContainer = inflasiMtmCard.querySelector('.chart-container > div');
+                const cardTitleElement = ihkCard.querySelector('.card-title');
+                const computedStyle = window.getComputedStyle(cardTitleElement);
+                const lineColor = computedStyle.backgroundColor;
+                const chartData = ihkData.slice(1).map(row => [row[0], row[2]]);
+
+                if (chartContainer) {
+                    renderChart(chartContainer, lineColor, chartData);
+                }
+            }
+        }
+
+        // Update Inflasi YoY card
+        if (ihkData && ihkData.length > 0) {
+            const inflasiYoYCard = document.getElementById('inflasi-yoy-card');
+            if (inflasiYoYCard) {
+                const inflasiYoYValueElement = document.getElementById('inflasi-yoy-value');
+                const inflasiYoYDescriptionElement = document.getElementById('inflasi-yoy-description');
+
+                inflasiYoYValueElement.textContent = ihkData[1][3];
+                inflasiYoYDescriptionElement.textContent = ihkData[1][0];
+
+                const chartContainer = inflasiYoYCard.querySelector('.chart-container > div');
+                const cardTitleElement = ihkCard.querySelector('.card-title');
+                const computedStyle = window.getComputedStyle(cardTitleElement);
+                const lineColor = computedStyle.backgroundColor;
+                const chartData = ihkData.slice(1).map(row => [row[0], row[3]]);
+
+                if (chartContainer) {
+                    renderChart(chartContainer, lineColor, chartData);
+                }
+            }
+        }
+
+        // Update Inflasi YtD card
+        if (ihkData && ihkData.length > 0) {
+            const inflasiYtDCard = document.getElementById('inflasi-ytd-card');
+
+            if (inflasiYtDCard) {
+                const inflasiYtDValueElement = document.getElementById('inflasi-ytd-value');
+                const inflasiYtDDescriptionElement = document.getElementById('inflasi-ytd-description');
+
+                inflasiYtDValueElement.textContent = ihkData[1][4];
+                inflasiYtDDescriptionElement.textContent = ihkData[1][0];
+
+                const chartContainer = inflasiYtDCard.querySelector('.chart-container > div');
+                const cardTitleElement = ihkCard.querySelector('.card-title');
+                const computedStyle = window.getComputedStyle(cardTitleElement);
+                const lineColor = computedStyle.backgroundColor;
+                const chartData = ihkData.slice(1).map(row => [row[0], row[4]]);
+
+                if (chartContainer) {
+                    renderChart(chartContainer, lineColor, chartData);
+                }
+            }
+        }
+
+        // Update NTP card
+        if (ntpData && ntpData.length > 0) {
+            const ntpCard = document.getElementById('ntp-card');
             if (ntpCard) {
-                ntpCard.querySelector('.card-value').textContent = ntpData[0]['NTP'];
-                ntpCard.querySelector('.card-description a').textContent = ntpData[0]['Bulan'];
+                const ntpValueElement = document.getElementById('ntp-value');
+                const ntpDescriptionElement = document.getElementById('ntp-description');
+
+                ntpValueElement.textContent = ntpData[1][1];
+                ntpDescriptionElement.textContent = ntpData[1][0];
 
                 const chartContainer = ntpCard.querySelector('.chart-container > div');
-                const cardTitleElement = ntpCard.querySelector('.card-title');
+                const cardTitleElement = document.querySelector(".metric-card.card-color-5 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
-
-                const chartData = ntpData.map(item => [item['Bulan'], item['NTP']]);
+                const chartData = ntpData.slice(1).map(row => [row[0], row[1]]);
 
                 if (chartContainer) {
                     renderChart(chartContainer, lineColor, chartData);
                 }
             }
         }
-        if (data && data.length > 0) {
-            const pariwisataData = data.slice(0,6);
-            const pariwisataCard = document.querySelector('.metric-card.card-color-9');
 
-            if (pariwisataCard) {
-                pariwisataCard.querySelector('.card-value').textContent = pariwisataData[0]['TPK'];
-                pariwisataCard.querySelector('.card-description a').textContent = pariwisataData[0]['Bulan'];
+        // Update TPK card
+        if (pariwisataData && pariwisataData.length > 0) {
+            const tpkCard = document.getElementById('tpk-card');
+            if (tpkCard) {
+                const tpkValueElement = document.getElementById('tpk-value');
+                const tpkDescriptionElement = document.getElementById('tpk-description');
 
-                const chartContainer = pariwisataCard.querySelector('.chart-container > div');
-                const cardTitleElement = pariwisataCard.querySelector('.card-title');
+                tpkValueElement.textContent = pariwisataData[1][1];
+                tpkDescriptionElement.textContent = pariwisataData[1][0];
+
+                const chartContainer = tpkCard.querySelector('.chart-container > div');
+                 const cardTitleElement = document.querySelector(".metric-card.card-color-9 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
-
-                const chartData = pariwisataData.map(item => [item['Bulan'], item['TPK']]);
+                const chartData = pariwisataData.slice(1).map(row => [row[0], row[1]]);
 
                 if (chartContainer) {
                     renderChart(chartContainer, lineColor, chartData);
                 }
             }
         }
-        if (data && data.length > 0) {
-            const transportasiData = data.slice(0,6);
-            const transportasiCard = document.querySelector('.metric-card.card-color-13');
-
+        // Update Transportasi card
+        if (transportasiData && transportasiData.length > 0) {
+            const transportasiCard = document.getElementById('penumpang-udara-internasional-card');
             if (transportasiCard) {
-                transportasiCard.querySelector('.card-value').textContent = transportasiData[0]['Penumpang Udara Internasional'];
-                transportasiCard.querySelector('.card-description a').textContent = transportasiData[0]['Bulan'];
+                const transportasiValueElement = document.getElementById('penumpang-udara-internasional-value');
+                const transportasiDescriptionElement = document.getElementById('penumpang-udara-internasional-description');
+
+                transportasiValueElement.textContent = transportasiData[1][1];
+                transportasiDescriptionElement.textContent = transportasiData[1][0];
 
                 const chartContainer = transportasiCard.querySelector('.chart-container > div');
-                const cardTitleElement = transportasiCard.querySelector('.card-title');
+                const cardTitleElement = document.querySelector(".metric-card.card-color-13 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
-
-                const chartData = transportasiData.map(item => [item['Bulan'], item['Penumpang Udara Internasional']]);
+                const chartData = transportasiData.slice(1).map(row => [row[0], row[1]]);
 
                 if (chartContainer) {
                     renderChart(chartContainer, lineColor, chartData);
                 }
             }
         }
-        if (data && data.length > 0) {
-            const eximData = data.slice(0,6);
-            const eximCard = document.querySelector('.metric-card.card-color-16');
 
+        // Update exim card
+        if (eximData && eximData.length > 0) {
+            const eximCard = document.getElementById('nilai-ekspor-card');
             if (eximCard) {
-                eximCard.querySelector('.card-value').textContent = eximData[0]['Nilai Ekspor (Miliar USD)'];
-                eximCard.querySelector('.card-description a').textContent = eximData[0]['Bulan'];
+                const eximValueElement = document.getElementById('nilai-ekspor-value');
+                const eximDescriptionElement = document.getElementById('nilai-ekspor-description');
+
+                eximValueElement.textContent = eximData[1][1];
+                eximDescriptionElement.textContent = eximData[1][0];
 
                 const chartContainer = eximCard.querySelector('.chart-container > div');
-                const cardTitleElement = eximCard.querySelector('.card-title');
+               const cardTitleElement = document.querySelector(".metric-card.card-color-16 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
-
-                const chartData = eximData.map(item => [item['Bulan'], item['Nilai Ekspor (Miliar USD)']]);
-
-                if (chartContainer) {
-                    renderChart(chartContainer, lineColor, chartData);
-                }
-            }
-        }
-        console.log(data);
-
-        // Inflasi MtM
-        if (data && data.length > 0) {
-            const ihkData = data.slice(0,6);
-            const ihkCard = document.querySelector('.metric-card.card-color-2'); // Adjust selector if needed
-
-            if (ihkCard) {
-                // Update value and description
-                ihkCard.querySelector('.card-value').textContent = ihkData[0]['Inflasi MtM'] + '%'; // Assuming the latest value is in the first row, "Inflasi MtM" column
-                ihkCard.querySelector('.card-description a').textContent = ihkData[0]['Bulan']; // Assuming the latest date is in the first row, "Bulan" column
-
-                // Update chart
-                const chartContainer = ihkCard.querySelector('.chart-container > div');
-                const cardTitleElement = ihkCard.querySelector('.card-title');
-                const computedStyle = window.getComputedStyle(cardTitleElement);
-                const lineColor = computedStyle.backgroundColor;
-
-                const chartData = ihkData.map(item => [item['Bulan'], item['Inflasi MtM']]);
-
-                if (chartContainer) {
-                    renderChart(chartContainer, lineColor, chartData);
-                }
-            }
-        }
-
-        // Inflasi YoY
-        if (data && data.length > 0) {
-            const ihkData = data.slice(0,6);
-            const ihkCard = document.querySelector('.metric-card.card-color-3'); // Adjust selector if needed
-
-            if (ihkCard) {
-                // Update value and description
-                ihkCard.querySelector('.card-value').textContent = ihkData[0]['Inflasi YoY'] + '%'; // Assuming the latest value is in the first row, "Inflasi YoY" column
-                ihkCard.querySelector('.card-description a').textContent = ihkData[0]['Bulan']; // Assuming the latest date is in the first row, "Bulan" column
-
-                // Update chart
-                const chartContainer = ihkCard.querySelector('.chart-container > div');
-                const cardTitleElement = ihkCard.querySelector('.card-title');
-                const computedStyle = window.getComputedStyle(cardTitleElement);
-                const lineColor = computedStyle.backgroundColor;
-
-                const chartData = ihkData.map(item => [item['Bulan'], item['Inflasi YoY']]);
-
-                if (chartContainer) {
-                    renderChart(chartContainer, lineColor, chartData);
-                }
-            }
-        }
-
-        // Inflasi Ytd
-        if (data && data.length > 0) {
-            const ihkData = data.slice(0,6);
-            const ihkCard = document.querySelector('.metric-card.card-color-4'); // Adjust selector if needed
-
-            if (ihkCard) {
-                // Update value and description
-                ihkCard.querySelector('.card-value').textContent = ihkData[0]['Inflasi YtD'] + '%'; // Assuming the latest value is in the first row, "Inflasi YtD" column
-                ihkCard.querySelector('.card-description a').textContent = ihkData[0]['Bulan']; // Assuming the latest date is in the first row, "Bulan" column
-
-                // Update chart
-                const chartContainer = ihkCard.querySelector('.chart-container > div');
-                const cardTitleElement = ihkCard.querySelector('.card-title');
-                const computedStyle = window.getComputedStyle(cardTitleElement);
-                const lineColor = computedStyle.backgroundColor;
-
-                const chartData = ihkData.map(item => [item['Bulan'], item['Inflasi YtD']]);
+                const chartData = eximData.slice(1).map(row => [row[0], row[1]]);
 
                 if (chartContainer) {
                     renderChart(chartContainer, lineColor, chartData);
@@ -300,8 +316,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Call the function to fetch and update data
-    fetchDataAndUpdate();
+    // Call the function to fetch all data and update
+    fetchAllDataAndUpdate();
 
     // Mobile menu toggle functionality (existing code)
     const menuToggle = document.querySelector('.menu-toggle');
