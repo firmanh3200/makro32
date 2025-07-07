@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to render charts with updated data
     const renderChart = (chartContainer, lineColor, chartData) => {
-        const labels = chartData.slice(1).map(row => row[0]);
-        const data = chartData.slice(1).map(row => parseFloat(row[1]));
+        const labels = chartData.map(row => row[0]);
+        const data = chartData.map(row => parseFloat(row[1]));
 
         const options = {
             chart: {
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ntpDescriptionElement.textContent = ntpData[1][0];
 
                 const chartContainer = ntpCard.querySelector('.chart-container > div');
-                const cardTitleElement = document.querySelector(".metric-card.card-color-5 .card-title");
+                 const cardTitleElement = document.querySelector(".metric-card.card-color-5 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
                 const chartData = ntpData.slice(1).map(row => [row[0], row[1]]);
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tpkDescriptionElement.textContent = pariwisataData[1][0];
 
                 const chartContainer = tpkCard.querySelector('.chart-container > div');
-                 const cardTitleElement = document.querySelector(".metric-card.card-color-9 .card-title");
+                const cardTitleElement = document.querySelector(".metric-card.card-color-9 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
                 const chartData = pariwisataData.slice(1).map(row => [row[0], row[1]]);
@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 eximDescriptionElement.textContent = eximData[1][0];
 
                 const chartContainer = eximCard.querySelector('.chart-container > div');
-               const cardTitleElement = document.querySelector(".metric-card.card-color-16 .card-title");
+                const cardTitleElement = document.querySelector(".metric-card.card-color-16 .card-title");
                 const computedStyle = window.getComputedStyle(cardTitleElement);
                 const lineColor = computedStyle.backgroundColor;
                 const chartData = eximData.slice(1).map(row => [row[0], row[1]]);
