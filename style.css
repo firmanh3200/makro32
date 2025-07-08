@@ -26,7 +26,8 @@
     --accent-color-15: #CDDC39; /* Lime */
     --accent-color-16: #455A64; /* Blue Grey Darker */
     --accent-color-17: #7CB342; /* Light Green Darker */
-    --accent-color-18: #D84315; /* Deep Orange Darker */
+    --accent-color-18: #D84315;
+    --accent-color-19: #71038d; /* Deep Orange Darker */
 }
 
 /* Global Reset & Box Sizing */
@@ -339,6 +340,14 @@ body {
 }
 .card-color-18 .card-value {
     color: var(--accent-color-18);
+}
+
+.card-color-19 .card-title {
+    background-color: var(--accent-color-19);
+    color: var(--header-text-color);
+}
+.card-color-19 .card-value {
+    color: var(--accent-color-19);
 }
 
 .card-value {
