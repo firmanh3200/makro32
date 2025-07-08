@@ -27,7 +27,6 @@
     --accent-color-16: #455A64; /* Blue Grey Darker */
     --accent-color-17: #7CB342; /* Light Green Darker */
     --accent-color-18: #D84315; /* Deep Orange Darker */
-    --accent-color-19: #0ecef0;
 }
 
 /* Global Reset & Box Sizing */
@@ -342,14 +341,6 @@ body {
     color: var(--accent-color-18);
 }
 
-.card-color-19 .card-title {
-    background-color: var(--accent-color-19);
-    color: var(--header-text-color);
-}
-.card-color-19 .card-value {
-    color: var(--accent-color-19);
-}
-
 .card-value {
     font-size: 2.5rem;
     font-weight: 700;
@@ -618,18 +609,4 @@ body {
     .accordion-header {
         font-size: 1rem;
     }
-}
-
-.whatsapp-chat {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.whatsapp-chat img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
