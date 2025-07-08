@@ -28,7 +28,7 @@ function parseCSV(csvText) {
 }
 
 
-function updateMetricCard(cardId, value, caption, chartData, categories) {
+function updateMetricCard(cardId, value, caption, chartData, categories, color) {
     const card = document.getElementById(cardId);
     card.querySelector('.value').textContent = value;
     card.querySelector('.caption').textContent = caption;
@@ -37,13 +37,16 @@ function updateMetricCard(cardId, value, caption, chartData, categories) {
         series: [{ data: chartData }],
         chart: {
             type: 'line',
-            height: '100%',
-            width: '100%',
+            height: '100%',  // Take full height of container
+            width: '100%',   // Take full width of container
             toolbar: { show: false },
-            zoom: { enabled: false }
+            zoom: { enabled: false },
+            sparkline: {
+                enabled: true // Enable sparkline to fill the container properly
+            }
         },
         xaxis: {
-             categories: categories,  // Use the provided categories (Bulan)
+            categories: categories,
             labels: { show: false },
             axisBorder: { show: false },
             axisTicks: { show: false }
@@ -58,17 +61,17 @@ function updateMetricCard(cardId, value, caption, chartData, categories) {
             curve: 'smooth',
             width: 2
         },
-        colors: ['#007bff'],
+        colors: [color], // Use the provided color
         tooltip: {
             enabled: true,
             x: {
                 formatter: function (val, { seriesIndex, dataPointIndex, w }) {
-                    return categories[dataPointIndex]; // Display the category (Bulan)
+                    return categories[dataPointIndex];
                 }
             },
             y: {
                 formatter: function (val, { seriesIndex, dataPointIndex, w }) {
-                    return val; // Display the value
+                    return val;
                 }
             },
         }
@@ -102,35 +105,46 @@ async function initializeDashboard() {
         return chartCategories.reverse(); // Reverse the categories
     }
 
+
+    // --- Helper function to get card title color ---
+    function getCardTitleColor(cardId) {
+        const cardTitle = document.querySelector(`#${cardId} .card-title`);
+        return window.getComputedStyle(cardTitle).backgroundColor;
+    }
+
     // Extract data for the first metric card (IHK)
     const ihkValue = firstRow.IHK;
     const ihkCaption = firstRow.Bulan;
     const ihkChartData = getChartData(data, 'IHK');
     const ihkCategories = getChartCategories(data);
+    const ihkColor = getCardTitleColor('ihk-card');
 
     // Extract data for the second metric card (Inflasi MtM)
     const mtmValue = firstRow.Inflasi_MtM;
     const mtmCaption = firstRow.Bulan;
     const mtmChartData = getChartData(data, 'Inflasi_MtM');
     const mtmCategories = getChartCategories(data);
+    const mtmColor = getCardTitleColor('mtm-card');
 
     // Extract data for the third metric card (Inflasi YoY)
     const yoyValue = firstRow.Inflasi_YoY;
     const yoyCaption = firstRow.Bulan;
     const yoyChartData = getChartData(data, 'Inflasi_YoY');
     const yoyCategories = getChartCategories(data);
+    const yoyColor = getCardTitleColor('yoy-card');
 
     // Extract data for the fourth metric card (Inflasi YtD)
     const ytdValue = firstRow.Inflasi_YtD;
     const ytdCaption = firstRow.Bulan;
     const ytdChartData = getChartData(data, 'Inflasi_YtD');
     const ytdCategories = getChartCategories(data);
+    const ytdColor = getCardTitleColor('ytd-card');
 
 
-    updateMetricCard('ihk-card', ihkValue, ihkCaption, ihkChartData, ihkCategories);
-    updateMetricCard('mtm-card', mtmValue, mtmCaption, mtmChartData, mtmCategories);
-    updateMetricCard('yoy-card', yoyValue, yoyCaption, yoyChartData, yoyCategories);
-    updateMetricCard('ytd-card', ytdValue, ytdCaption, ytdChartData, ytdCategories);
+    updateMetricCard('ihk-card', ihkValue, ihkCaption, ihkChartData, ihkCategories, ihkColor);
+    updateMetricCard('mtm-card', mtmValue, mtmCaption, mtmChartData, mtmCategories, mtmColor);
+    updateMetricCard('yoy-card', yoyValue, yoyCaption, yoyChartData, yoyCategories, yoyColor);
+    updateMetricCard('ytd-card', ytdValue, ytdCaption, ytdChartData, ytdCategories, ytdColor);
 }
 
 initializeDashboard();

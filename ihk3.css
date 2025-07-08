@@ -1,0 +1,612 @@
+:root {
+    --primary-color: #4CAF50; /* A shade of green */
+    --secondary-color: #2196F3; /* A shade of blue */
+    --background-color: #f0f2f5; /* Light gray background */
+    --card-background: #ffffff;
+    --text-color-dark: #333;
+    --text-color-light: #666;
+    --header-background: #2c3e50; /* Dark blue-gray */
+    --header-text-color: #ffffff;
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --border-radius: 8px;
+    --accent-color-1: #FFC107; /* Amber */
+    --accent-color-2: #9C27B0; /* Purple */
+    --accent-color-3: #E91E63; /* Deep Pink */
+    --accent-color-4: #00BCD4; /* Cyan */
+    --accent-color-5: #FF9800; /* Orange */
+    --accent-color-6: #795548; /* Brown */
+    --accent-color-7: #4CAF50; /* Green (re-using for consistency) */
+    --accent-color-8: #2196F3; /* Blue (re-using for consistency) */
+    --accent-color-9: #607D8B; /* Blue Grey */
+    --accent-color-10: #FF5722; /* Deep Orange */
+    --accent-color-11: #8BC34A; /* Light Green */
+    --accent-color-12: #673AB7; /* Deep Purple */
+    --accent-color-13: #00897B; /* Teal */
+    --accent-color-14: #3F51B5; /* Indigo */
+    --accent-color-15: #CDDC39; /* Lime */
+    --accent-color-16: #455A64; /* Blue Grey Darker */
+    --accent-color-17: #7CB342; /* Light Green Darker */
+    --accent-color-18: #D84315; /* Deep Orange Darker */
+}
+
+/* Global Reset & Box Sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Sticky Header */
+.dashboard-header {
+    background-color: var(--header-background);
+    color: var(--header-text-color);
+    padding: 1.5rem 2rem;
+    display: flex; /* Changed from text-align: center */
+    justify-content: space-between; /* Added */
+    align-items: center; /* Added */
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensure header stays on top */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0; /* Removed default margin that might affect flex alignment */
+}
+
+/* Navigation Menu */
+.main-nav .nav-links {
+    list-style: none;
+    display: flex; /* Desktop default: horizontal */
+    gap: 1.5rem;
+}
+
+.main-nav .nav-links a {
+    color: var(--header-text-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.main-nav .nav-links a:hover {
+    color: var(--primary-color); /* Highlight on hover */
+}
+
+/* Hamburger menu button */
+.menu-toggle {
+    display: none; /* Hidden by default on desktop */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001; /* Above nav links when open */
+}
+
+.hamburger {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--header-text-color);
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+    content: '';
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--header-text-color);
+    position: absolute;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.hamburger::before {
+    top: -8px;
+}
+
+.hamburger::after {
+    top: 8px;
+}
+
+/* Mobile menu overlay */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 998; /* Below nav-links but above content */
+}
+
+/* Main Dashboard Content */
+#dashboard-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Metrics Grid Container */
+.metrics-grid-container {
+    display: grid;
+    gap: 1.5rem; /* Space between cards */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+    /* margin-bottom: 1.5rem; This margin is now handled by accordion item/separator */
+}
+
+/* Metric Card Styling */
+.metric-card {
+    background-color: var(--card-background);
+    padding: 1.8rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column; /* Stacks title and data row vertically */
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    position: relative;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem; /* Space between title and data row */
+    padding: 0.3rem 0.8rem; /* Add padding for background */
+    border-radius: 4px; /* Slightly rounded corners for the background */
+    display: inline-block; /* Make background fit content */
+}
+
+/* New: Container for value, description, and chart */
+.card-data-row {
+    display: flex;
+    flex-direction: row; /* Arranges text and chart side-by-side */
+    justify-content: space-between; /* Pushes chart to the right */
+    align-items: center; /* Vertically centers text and chart */
+    width: 100%; /* Ensure it spans the card width */
+    flex-grow: 1; /* Allows this section to take available vertical space */
+}
+
+/* New: Container for value and description text */
+.text-data-col {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allows text column to take available width */
+    margin-right: 1rem; /* Space between text and chart */
+}
+
+/* Color schemes for metric cards */
+.card-color-1 .card-title {
+    background-color: var(--primary-color);
+    color: var(--header-text-color);
+}
+.card-color-1 .card-value {
+    color: var(--primary-color);
+}
+
+.card-color-2 .card-title {
+    background-color: var(--secondary-color);
+    color: var(--header-text-color);
+}
+.card-color-2 .card-value {
+    color: var(--secondary-color);
+}
+
+.card-color-3 .card-title {
+    background-color: var(--accent-color-1);
+    color: var(--text-color-dark);
+}
+.card-color-3 .card-value {
+    color: var(--accent-color-1);
+}
+
+.card-color-4 .card-title {
+    background-color: var(--accent-color-2);
+    color: var(--header-text-color);
+}
+.card-color-4 .card-value {
+    color: var(--accent-color-2);
+}
+
+.card-color-5 .card-title {
+    background-color: var(--accent-color-3);
+    color: var(--header-text-color);
+}
+.card-color-5 .card-value {
+    color: var(--accent-color-3);
+}
+
+.card-color-6 .card-title {
+    background-color: var(--accent-color-4);
+    color: var(--header-text-color);
+}
+.card-color-6 .card-value {
+    color: var(--accent-color-4);
+}
+
+.card-color-7 .card-title {
+    background-color: var(--accent-color-5);
+    color: var(--header-text-color);
+}
+.card-color-7 .card-value {
+    color: var(--accent-color-5);
+}
+
+.card-color-8 .card-title {
+    background-color: var(--accent-color-6);
+    color: var(--header-text-color);
+}
+.card-color-8 .card-value {
+    color: var(--accent-color-6);
+}
+
+.card-color-9 .card-title {
+    background-color: var(--accent-color-9);
+    color: var(--header-text-color);
+}
+.card-color-9 .card-value {
+    color: var(--accent-color-9);
+}
+
+.card-color-10 .card-title {
+    background-color: var(--accent-color-10);
+    color: var(--header-text-color);
+}
+.card-color-10 .card-value {
+    color: var(--accent-color-10);
+}
+
+.card-color-11 .card-title {
+    background-color: var(--accent-color-11);
+    color: var(--text-color-dark);
+}
+.card-color-11 .card-value {
+    color: var(--accent-color-11);
+}
+
+.card-color-12 .card-title {
+    background-color: var(--accent-color-12);
+    color: var(--header-text-color);
+}
+.card-color-12 .card-value {
+    color: var(--accent-color-12);
+}
+
+.card-color-13 .card-title {
+    background-color: var(--accent-color-13);
+    color: var(--header-text-color);
+}
+.card-color-13 .card-value {
+    color: var(--accent-color-13);
+}
+
+.card-color-14 .card-title {
+    background-color: var(--accent-color-14);
+    color: var(--header-text-color);
+}
+.card-color-14 .card-value {
+    color: var(--accent-color-14);
+}
+
+.card-color-15 .card-title {
+    background-color: var(--accent-color-15);
+    color: var(--text-color-dark); /* Lime color might need dark text for contrast */
+}
+.card-color-15 .card-value {
+    color: var(--accent-color-15);
+}
+
+.card-color-16 .card-title {
+    background-color: var(--accent-color-16);
+    color: var(--header-text-color);
+}
+.card-color-16 .card-value {
+    color: var(--accent-color-16);
+}
+
+.card-color-17 .card-title {
+    background-color: var(--accent-color-17);
+    color: var(--header-text-color);
+}
+.card-color-17 .card-value {
+    color: var(--accent-color-17);
+}
+
+.card-color-18 .card-title {
+    background-color: var(--accent-color-18);
+    color: var(--header-text-color);
+}
+.card-color-18 .card-value {
+    color: var(--accent-color-18);
+}
+
+.card-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem; /* Reduced space below value */
+    line-height: 1;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-bottom: 0; /* Remove margin as it's now wrapped in text-data-col */
+}
+
+/* Chart container styling */
+.chart-container {
+    max-width: 130px; /* Use max-width instead of fixed width */
+    width: 100%; /* Allow it to take full width up to max-width */
+    height: 70px; /* Reduced height for compactness */
+    margin-top: 0; /* Remove auto margin, as it's row-aligned */
+    flex-shrink: 1; /* Allow it to shrink if space is limited */
+    min-width: 0; /* Allow the container to shrink beyond its intrinsic content size if needed */
+    position: relative; /* For canvas sizing within */
+}
+
+/* No direct canvas styling needed for ApexCharts, it creates its own SVG structure */
+/* .chart-container canvas {
+    width: 100%; 
+    height: 100%; 
+} */
+
+/* Separator style */
+.metrics-grid-separator {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 2rem 0; /* Space above and below the separator */
+}
+
+/* Accordion Styles */
+.accordion-item {
+    margin-bottom: 1rem; /* Space between accordion items */
+    border-radius: var(--border-radius);
+    overflow: hidden; /* Ensures smooth transition */
+}
+
+.accordion-header {
+    background-color: var(--card-background);
+    color: var(--text-color-dark);
+    padding: 1.2rem 1.8rem;
+    width: 100%;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: var(--shadow-light); /* Apply shadow to header */
+    border-radius: var(--border-radius);
+}
+
+.accordion-header:hover {
+    background-color: var(--background-color);
+}
+
+.accordion-header h3 {
+    margin: 0; /* Remove default margin from h3 */
+    font-size: 1.2rem; /* Keep consistent font size for header title */
+}
+
+.accordion-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.accordion-icon::before,
+.accordion-icon::after {
+    content: '';
+    position: absolute;
+    background-color: var(--text-color-dark);
+}
+
+.accordion-icon::before {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.accordion-icon::after {
+    width: 2px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.accordion-header.active .accordion-icon::after {
+    transform: translateX(-50%) rotate(90deg); /* Rotate plus to become horizontal */
+    opacity: 0; /* Hide the vertical bar to make it a minus or simply disappear */
+}
+
+.accordion-body {
+    background-color: var(--card-background);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    padding: 0 1.8rem; /* Add horizontal padding to align with header */
+    box-shadow: var(--shadow-light); /* Inherit shadow for continuity if desired */
+    border-radius: 0 0 var(--border-radius) var(--border-radius); /* Rounded bottom only */
+}
+
+.accordion-body > .metrics-grid-separator {
+    margin-top: 0; /* Remove top margin from separator inside accordion */
+}
+
+.accordion-body.active {
+    padding-bottom: 1.8rem; /* Add bottom padding when active */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 1rem 1.5rem; /* Adjust padding for smaller screens to make space for menu toggle */
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.7rem;
+    }
+
+    /* Mobile menu styles */
+    .menu-toggle {
+        display: block; /* Show hamburger on mobile */
+    }
+
+    .main-nav .nav-links {
+        flex-direction: column; /* Stack links vertically */
+        position: fixed; /* Position fixed for overlay */
+        top: 0;
+        right: 0;
+        width: 70%; /* Menu width */
+        max-width: 300px;
+        height: 100%;
+        background-color: var(--header-background); /* Same as header */
+        padding: 4rem 1.5rem 1.5rem; /* Padding for content */
+        box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(100%); /* Initially off-screen to the right */
+        transition: transform 0.3s ease-in-out;
+        z-index: 999; /* Below toggle button */
+        gap: 1rem; /* Space between vertical links */
+    }
+
+    .main-nav .nav-links.active {
+        transform: translateX(0); /* Slide in */
+    }
+
+    .main-nav .nav-links a {
+        color: var(--header-text-color);
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+    }
+
+    .main-nav .nav-links li:last-child a {
+        border-bottom: none;
+    }
+
+    /* Animate hamburger to 'X' */
+    .menu-toggle.active .hamburger {
+        background-color: transparent;
+    }
+
+    .menu-toggle.active .hamburger::before {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-toggle.active .hamburger::after {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* Other content adjustments */
+    #dashboard-content {
+        padding: 1.5rem;
+    }
+
+    .metric-card {
+        padding: 1.5rem;
+    }
+
+    .card-value {
+        font-size: 2rem;
+    }
+
+    .chart-container {
+        max-width: 100px; /* Adjust max-width for smaller screens */
+        height: 60px; /* Adjust height for smaller screens */
+    }
+
+    .accordion-header {
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    .accordion-body {
+        padding: 0 1.5rem;
+    }
+    .accordion-body.active {
+        padding-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 550px) { /* Breakpoint for stacking content within card */
+    .card-data-row {
+        flex-direction: column; /* Stack text and chart vertically */
+        align-items: flex-start; /* Align stacked items to the left */
+    }
+    .text-data-col {
+        margin-right: 0; /* Remove right margin when stacked */
+        margin-bottom: 0.5rem; /* Add space below text when stacked */
+    }
+    .chart-container {
+        width: 100%; /* Chart takes full width when stacked */
+        max-width: none; /* Remove max-width when stacked to allow full width */
+        height: 80px; /* Revert to a bit taller for full width */
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    #dashboard-content {
+        padding: 1rem;
+    }
+
+    .metric-card {
+        padding: 1.2rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-value {
+        font-size: 1.8rem;
+    }
+
+    .card-description {
+        font-size: 0.8rem;
+    }
+
+    .chart-container {
+        height: 70px; /* Further adjust height for smallest screens */
+    }
+
+    .accordion-header {
+        font-size: 1rem;
+    }
+}
