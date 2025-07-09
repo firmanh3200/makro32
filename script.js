@@ -43,10 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 y: {
                     formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-                        // Display the series name and formatted value
-                        const currentSeriesName = w.config.series[seriesIndex] ? w.config.series[seriesIndex].name : 'Value';
-                        // Only show value if it's not null/undefined
-                        return currentSeriesName + ': ' + (val !== null ? val.toFixed(2) : 'N/A');
+                        // Display only the formatted value
+                        return val !== null ? val.toFixed(2) : 'N/A';
                     }
                 }
             },
