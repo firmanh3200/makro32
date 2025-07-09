@@ -329,13 +329,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = eximData[i];
                     categories.push(row.Bulan);
                     eksporData.push(parseFloat(row.Ekspor)); // Changed column name
-                    kumEksporData.push(parseFloat(row.Kum_Ekpsor)); // Changed column name
+                    kumEksporData.push(parseFloat(row.Kum_Ekspor)); // Changed column name
                     imporData.push(parseFloat(row.Impor)); // Changed column name
                     kumImporData.push(parseFloat(row.Kum_Impor)); // Changed column name
                 }
 
                 updateCardChart('.card-color-16', 'Ekspor', eksporData, categories, 'Nilai Ekspor', '', latestMonth.Bulan); // Updated valueKey
-                updateCardChart('.card-color-17', 'Kum_Ekpsor', kumEksporData, categories, 'Kumulatif Ekspor', '', latestMonth.Bulan); // Updated valueKey
+                updateCardChart('.card-color-17', 'Kum_Ekspor', kumEksporData, categories, 'Kumulatif Ekspor', '', latestMonth.Bulan); // Updated valueKey
                 updateCardChart('.card-color-18', 'Impor', imporData, categories, 'Nilai Impor', '', latestMonth.Bulan); // Updated valueKey
                 updateCardChart('.card-color-19', 'Kum_Impor', kumImporData, categories, 'Kumulatif Impor', '', latestMonth.Bulan); // Updated valueKey
             }
