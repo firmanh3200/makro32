@@ -219,10 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                updateCardChart('.card-color-1', 'IHK', ihkSeriesData, chartCategories, 'IHK');
-                updateCardChart('.card-color-2', 'Inflasi_MtM', inflasiMtmSeriesData, chartCategories, 'Inflasi MtM', '%');
-                updateCardChart('.card-color-3', 'Inflasi_YoY', inflasiYoySeriesData, chartCategories, 'Inflasi YoY', '%');
-                updateCardChart('.card-color-4', 'Inflasi_YtD', inflasiYtdSeriesData, chartCategories, 'Inflasi YtD', '%');
+                updateCardChart('.card-color-1', 'IHK', ihkSeriesData, chartCategories, 'IHK', '', latestMonthCaption);
+                updateCardChart('.card-color-2', 'Inflasi_MtM', inflasiMtmSeriesData, chartCategories, 'Inflasi MtM', '%', latestMonthCaption);
+                updateCardChart('.card-color-3', 'Inflasi_YoY', inflasiYoySeriesData, chartCategories, 'Inflasi YoY', '%', latestMonthCaption);
+                updateCardChart('.card-color-4', 'Inflasi_YtD', inflasiYtdSeriesData, chartCategories, 'Inflasi YtD', '%', latestMonthCaption);
             }
             return fetchAndParseCsv(ntpCsvUrl); // Chain next fetch
         })
