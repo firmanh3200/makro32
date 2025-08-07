@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pirámida Penduduk dengan DataTables & ApexCharts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-1.13.4/b-2.3.6/b-html5-2.3.6/b-print-2.3.6/datatables.min.css"/>
+  
+  <!-- ApexCharts JS -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+  <!-- jQuery (wajib untuk DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- DataTables JS dengan Extensions Buttons -->
+  <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/b-2.3.6/b-html5-2.3.6/b-print-2.3.6/datatables.min.js"></script>
+
+  <style>
+    body {
+      padding: 20px;
+      background: #f8f9fa;
+    }
+    #content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+    #table-container, #chart-container {
+      flex: 1 1 500px;
+      min-width: 400px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    table.dataTable thead th {
+      background-color: #0d6efd;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      align-self: center;
+      margin-top: 50px;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <h1 class="mb-4 text-center">Piramida Penduduk Kecamatan 2024</h1>
+    <h5 class="text-center">Sumber: https://portalpk-siga.bkkbn.go.id/tabulasi</h5>
+    <br><br>
+
+    <div class="row mb-3 g-3 align-items-center">
+      <div class="col-sm-6 col-md-4">
+        <label for="kakoSelect" class="form-label fw-semibold">Pilih Kabupaten/Kota:</label>
+        <select id="kakoSelect" class="form-select">
+          <option value="">-- Pilih KaKo --</option>
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <label for="kecamatanSelect" class="form-label fw-semibold">Pilih Kecamatan (Filter):</label>
+        <select id="kecamatanSelect" class="form-select" disabled>
+          <option value="">-- Pilih Kecamatan --</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="content">
+      <div id="table-container">
+        <h5 id="table-title">Data Penduduk</h5>
+        <div id="table-loader" class="loader"></div>
+        <table id="populationTable" class="table table-striped table-bordered" style="width:100%; display:none;">
+          <thead>
+            <tr>
+              <th>Kelompok Umur</th>
+              <th class="text-primary">Laki-Laki</th>
+              <th class="text-danger">Perempuan</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="chart-container">
+        <h5 id="chart-title">Piramida Penduduk</h5>
+        <div id="chart-loader" class="loader"></div>
+        <div id="pyramidChart"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    // Variabel global
+    const ageGroups = ['0 - 4', '5 - 9', '10 - 14', '15 - 19', '20 - 24',
+                       '25 - 29', '30 - 34', '35 - 39', '40 - 44', '45 - 49',
+                       '50 - 54', '55 - 59', '60 - 64', '65 - 69', '70 - 74', '75+'];
+
+    const kakoSelect = document.getElementById('kakoSelect');
+    const kecamatanSelect = document.getElementById('kecamatanSelect');
+    const chartLoader = document.getElementById('chart-loader');
+    const tableLoader = document.getElementById('table-loader');
+    const populationTable = $('#populationTable');
+    
+    let rawData = [];
+    let pyramidChart;
+    let dataTable;
+
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(';').map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const vals = line.split(';');
+        let obj = {};
+        headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].trim() : '');
+        return obj;
+      });
+    }
+
+    function aggregateData(dataSubset) {
+      const result = {};
+      ageGroups.forEach(age => {
+        result[age] = { male: 0, female: 0 };
+      });
+      dataSubset.forEach(row => {
+        const gender = row.GENDER.toLowerCase();
+        ageGroups.forEach(age => {
+          let val = parseInt(row[age].replace(/\./g, '')) || 0;
+          if (['laki-laki', 'male', 'laki laki', 'LAKI-LAKI'].includes(gender)) {
+            result[age].male += val;
+          } else if (['perempuan', 'female', 'wanita', 'PEREMPUAN'].includes(gender)) {
+            result[age].female += val;
+          }
+        });
+      });
+      return result;
+    }
+
+    function showLoaders() {
+      chartLoader.style.display = 'block';
+      tableLoader.style.display = 'block';
+      $('#pyramidChart').hide();
+      populationTable.hide();
+    }
+
+    function hideLoaders() {
+      chartLoader.style.display = 'none';
+      tableLoader.style.display = 'none';
+      $('#pyramidChart').show();
+      populationTable.show();
+    }
+    
+    function initKakoOptions(data) {
+      const uniqueKako = [...new Set(data.map(d => d.KAKO))].sort();
+      uniqueKako.forEach(kako => {
+        const option = document.createElement('option');
+        option.value = kako;
+        option.textContent = kako;
+        kakoSelect.appendChild(option);
+      });
+    }
+
+    function updateKecamatanOptions(kako) {
+      kecamatanSelect.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      if (!kako) {
+        kecamatanSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        kecamatanSelect.disabled = true;
+        return;
+      }
+      const kecamatans = [...new Set(rawData.filter(d => d.KAKO === kako).map(d => d.KECAMATAN))].sort();
+      kecamatans.forEach(kec => {
+        const option = document.createElement('option');
+        option.value = kec;
+        option.textContent = kec;
+        kecamatanSelect.appendChild(option);
+      });
+      kecamatanSelect.disabled = false;
+    }
+    
+    function updateDisplay() {
+        const kako = kakoSelect.value;
+        const kec = kecamatanSelect.value;
+
+        if (!kako) {
+            $('#content').hide();
+            return;
+        }
+        $('#content').show();
+        showLoaders();
+
+        setTimeout(() => {
+            let dataToProcess;
+            let title;
+
+            if (kako && kec) {
+                dataToProcess = rawData.filter(d => d.KAKO === kako && d.KECAMATAN === kec);
+                title = `Kec. ${kec}, ${kako}`;
+            } else {
+                dataToProcess = rawData.filter(d => d.KAKO === kako);
+                title = `Data Agregat ${kako}`;
+            }
+
+            const aggregated = aggregateData(dataToProcess);
+            
+            $('#table-title').text('Data Penduduk - ' + title);
+            $('#chart-title').text('Piramida Penduduk - ' + title);
+
+            renderDataTable(aggregated);
+            renderPyramid(aggregated);
+            hideLoaders();
+        }, 50);
+    }
+    
+    function renderDataTable(aggData) {
+      const tableData = ageGroups.map(age => {
+          const counts = aggData[age] || { male: 0, female: 0 };
+          return [age, counts.male, counts.female];
+      });
+
+      if (dataTable) {
+          dataTable.clear();
+          dataTable.rows.add(tableData);
+          dataTable.draw();
+      } else {
+          dataTable = populationTable.DataTable({
+              data: tableData,
+              columns: [
+                  { title: "Kelompok Umur" },
+                  { title: "Laki-Laki", className: "text-primary", render: $.fn.dataTable.render.number('.', ',', 0) },
+                  { title: "Perempuan", className: "text-danger", render: $.fn.dataTable.render.number('.', ',', 0) }
+              ],
+              destroy: true,
+              paging: false,
+              searching: false,
+              info: false,
+              ordering: false,
+              buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+              dom: 'Bfrtip'
+          });
+      }
+    }
+
+    function renderPyramid(aggData) {
+        const maleValues = ageGroups.map(age => -(aggData[age]?.male || 0));
+        const femaleValues = ageGroups.map(age => aggData[age]?.female || 0);
+        const maxVal = Math.max(...maleValues.map(Math.abs), ...femaleValues);
+
+        const options = {
+            chart: {
+                type: 'bar',
+                height: 600,
+                // *** KUNCI PERBAIKAN 1: 'stacked: true' membuat batang Laki-laki & Perempuan sejajar.
+                stacked: true, 
+                toolbar: { show: true }
+            },
+            series: [
+                { name: 'Laki-Laki', data: maleValues },
+                { name: 'Perempuan', data: femaleValues }
+            ],
+            colors: ['#0d6efd', '#dc3545'],
+            plotOptions: {
+                bar: { horizontal: true, barHeight: '80%', borderRadius: 4 }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: val => Math.abs(val).toLocaleString('id-ID'),
+                style: { fontSize: '10px' }
+            },
+            stroke: { width: 1, colors: ['#fff'] },
+            grid: {
+                xaxis: { lines: { show: false } },
+                yaxis: { lines: { show: true } } // Menampilkan garis grid vertikal untuk setiap kategori umur
+            },
+            xaxis: {
+                categories: ageGroups,
+                labels: { formatter: val => Math.abs(val).toLocaleString('id-ID') },
+                title: { text: 'Jumlah Penduduk' },
+                min: -maxVal * 1.15,
+                max: maxVal * 1.15,
+                tickAmount: 8
+            },
+            yaxis: {
+                // *** KUNCI PERBAIKAN 2: 'reversed: true' membalik urutan sumbu Y agar umur muda di bawah.
+                reversed: true 
+            },
+            tooltip: {
+                shared: false,
+                y: { formatter: val => Math.abs(val).toLocaleString('id-ID') }
+            },
+            legend: {
+                position: 'top', // Posisi legenda di atas lebih umum
+                horizontalAlign: 'center'
+            }
+        };
+
+        if (pyramidChart) {
+            pyramidChart.updateOptions(options);
+        } else {
+            pyramidChart = new ApexCharts(document.querySelector("#pyramidChart"), options);
+            pyramidChart.render();
+        }
+    }
+
+    // --- Event Listeners & Inisialisasi ---
+    kakoSelect.addEventListener('change', () => {
+      updateKecamatanOptions(kakoSelect.value);
+      updateDisplay();
+    });
+
+    kecamatanSelect.addEventListener('change', updateDisplay);
+
+    $('#content').hide();
+
+    fetch('data.csv')
+      .then(resp => {
+        if (!resp.ok) throw new Error('Gagal memuat data.csv, pastikan file ada di direktori yang sama.');
+        return resp.text();
+      })
+      .then(txt => {
+        rawData = parseCSV(txt);
+        initKakoOptions(rawData);
+      })
+      .catch(err => {
+          alert('Error: ' + err.message);
+          console.error(err);
+      });
+</script>
+</body>
+</html>
