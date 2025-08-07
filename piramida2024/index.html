@@ -34,11 +34,12 @@
       flex-direction: column;
     }
     table.dataTable thead th {
-      background-color: #0d6efd;
+      background-color: #0d6efd; /* Warna default */
       color: white;
       position: sticky;
       top: 0;
       z-index: 5;
+      transition: background-color 0.3s ease; /* Transisi halus untuk perubahan warna */
     }
     .loader {
       border: 5px solid #f3f3f3;
@@ -70,16 +71,26 @@
     <br><br>
 
     <div class="row mb-3 g-3 align-items-center">
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-6 col-md-4 col-lg-3">
         <label for="kakoSelect" class="form-label fw-semibold">Pilih Kabupaten/Kota:</label>
         <select id="kakoSelect" class="form-select">
           <option value="">-- Pilih KaKo --</option>
         </select>
       </div>
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-6 col-md-4 col-lg-3">
         <label for="kecamatanSelect" class="form-label fw-semibold">Pilih Kecamatan (Filter):</label>
         <select id="kecamatanSelect" class="form-select" disabled>
           <option value="">-- Pilih Kecamatan --</option>
+        </select>
+      </div>
+      <!-- PENAMBAHAN BARU: Dropdown untuk memilih tema warna -->
+      <div class="col-sm-12 col-md-4 col-lg-3">
+        <label for="themeSelect" class="form-label fw-semibold">Pilih Tema Warna:</label>
+        <select id="themeSelect" class="form-select">
+          <option value="blue">Biru (Default)</option>
+          <option value="green">Hijau</option>
+          <option value="orange">Oranye</option>
+          <option value="brown">Coklat</option>
         </select>
       </div>
     </div>
@@ -109,7 +120,6 @@
             <canvas id="pyramidChart"></canvas>
         </div>
 
-        <!-- PENAMBAHAN BARU: Tombol untuk mengunduh gambar grafik -->
         <div id="download-buttons" class="mt-3 text-center">
           <button id="downloadPngBtn" class="btn btn-primary btn-sm me-2">Unduh PNG</button>
           <button id="downloadJpgBtn" class="btn btn-primary btn-sm">Unduh JPG</button>
@@ -120,12 +130,37 @@
   </div>
 
 <script>
+    /* === PENAMBAHAN BARU: Definisi palet warna untuk setiap tema === */
+    const colorThemes = {
+      blue: { 
+        male: '#0d6efd',    // Biru Bootstrap
+        female: '#dc3545',  // Merah Bootstrap
+        table: '#0d6efd'
+      },
+      green: {
+        male: '#198754',    // Hijau Bootstrap (Success)
+        female: '#20c997',  // Teal Bootstrap
+        table: '#198754'
+      },
+      orange: {
+        male: '#fd7e14',    // Oranye Bootstrap
+        female: '#ffc107',  // Kuning Bootstrap (Warning)
+        table: '#fd7e14'
+      },
+      brown: {
+        male: '#8B4513',    // SaddleBrown
+        female: '#D2691E',  // Chocolate
+        table: '#8B4513'
+      }
+    };
+
     const ageGroups = ['0 - 4', '5 - 9', '10 - 14', '15 - 19', '20 - 24',
                        '25 - 29', '30 - 34', '35 - 39', '40 - 44', '45 - 49',
                        '50 - 54', '55 - 59', '60 - 64', '65 - 69', '70 - 74', '75+'];
 
     const kakoSelect = document.getElementById('kakoSelect');
     const kecamatanSelect = document.getElementById('kecamatanSelect');
+    const themeSelect = document.getElementById('themeSelect'); // PENAMBAHAN BARU
     const chartLoader = document.getElementById('chart-loader');
     const tableLoader = document.getElementById('table-loader');
     const populationTable = $('#populationTable');
@@ -168,7 +203,7 @@
       chartLoader.style.display = 'block';
       tableLoader.style.display = 'block';
       $('#chart-wrapper').hide();
-      $('#download-buttons').hide(); // Sembunyikan tombol unduh saat loading
+      $('#download-buttons').hide();
       populationTable.hide();
     }
 
@@ -176,7 +211,7 @@
       chartLoader.style.display = 'none';
       tableLoader.style.display = 'none';
       $('#chart-wrapper').show();
-      $('#download-buttons').show(); // Tampilkan kembali tombol unduh
+      $('#download-buttons').show();
       populationTable.show();
     }
     
@@ -240,6 +275,12 @@
           const counts = aggData[age] || { male: 0, female: 0 };
           return [age, counts.male, counts.female];
       });
+
+      // MODIFIKASI: Terapkan warna tema ke header tabel saat pertama kali render
+      const currentTheme = themeSelect.value;
+      const colors = colorThemes[currentTheme];
+      $('#populationTable thead th').css('background-color', colors.table);
+      
       if (dataTable) {
           dataTable.clear().rows.add(tableData).draw();
       } else {
@@ -258,17 +299,24 @@
     }
 
     function renderPyramid(aggData) {
+        // MODIFIKASI: Ambil warna dari tema yang dipilih
+        const currentTheme = themeSelect.value;
+        const colors = colorThemes[currentTheme];
+
         const maleValues = ageGroups.map(age => -(aggData[age]?.male || 0));
         const femaleValues = ageGroups.map(age => aggData[age]?.female || 0);
+        
         const chartData = {
             labels: ageGroups,
             datasets: [
                 {
-                    label: 'Laki-Laki', data: maleValues, backgroundColor: '#0d6efd',
+                    label: 'Laki-Laki', data: maleValues, 
+                    backgroundColor: colors.male, // MODIFIKASI
                     barPercentage: 0.9, categoryPercentage: 0.9
                 },
                 {
-                    label: 'Perempuan', data: femaleValues, backgroundColor: '#dc3545',
+                    label: 'Perempuan', data: femaleValues, 
+                    backgroundColor: colors.female, // MODIFIKASI
                     barPercentage: 0.9, categoryPercentage: 0.9
                 }
             ]
@@ -281,12 +329,10 @@
                 x: {
                     stacked: true, title: { display: true, text: 'Jumlah Penduduk' },
                     ticks: { callback: (value) => Math.abs(value).toLocaleString('id-ID') },
-                    // PENAMBAHAN BARU: Menghilangkan garis grid vertikal
                     grid: { display: false }
                 },
                 y: {
                     stacked: true, reverse: true, beginAtZero: true,
-                    // PENAMBAHAN BARU: Menghilangkan garis grid horizontal
                     grid: { display: false }
                 }
             },
@@ -310,11 +356,28 @@
         }
     }
 
+    /* === PENAMBAHAN BARU: Fungsi untuk mengubah warna berdasarkan tema === */
+    function applyTheme() {
+        const selectedTheme = themeSelect.value;
+        const colors = colorThemes[selectedTheme];
+
+        // 1. Ubah warna header tabel
+        $('#populationTable thead th').css('background-color', colors.table);
+
+        // 2. Ubah warna grafik jika sudah ada
+        if (pyramidChart) {
+            pyramidChart.data.datasets[0].backgroundColor = colors.male;
+            pyramidChart.data.datasets[1].backgroundColor = colors.female;
+            pyramidChart.update();
+        }
+    }
+
     kakoSelect.addEventListener('change', () => {
       updateKecamatanOptions(kakoSelect.value);
       updateDisplay();
     });
     kecamatanSelect.addEventListener('change', updateDisplay);
+    themeSelect.addEventListener('change', applyTheme); // PENAMBAHAN BARU: Event listener untuk tema
 
     $('#content').hide();
     fetch('data.csv')
@@ -326,7 +389,6 @@
       .catch(err => { alert('Error: ' + err.message); console.error(err); });
 
 
-    /* === PENAMBAHAN BARU: Fungsi untuk tombol unduh gambar grafik === */
     function downloadChart(format) {
         const canvas = document.getElementById('pyramidChart');
         const link = document.createElement('a');
@@ -335,16 +397,14 @@
         const filename = `piramida_penduduk_${kako}_${kec || 'agregat'}`;
 
         if (format === 'jpeg') {
-            // JPG tidak mendukung transparansi, jadi kita perlu menggambar background putih
             const context = canvas.getContext('2d');
             context.globalCompositeOperation = 'destination-over';
             context.fillStyle = 'white';
             context.fillRect(0, 0, canvas.width, canvas.height);
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.download = `${filename}.jpg`;
-            context.globalCompositeOperation = 'source-over'; // Kembalikan ke default
+            context.globalCompositeOperation = 'source-over';
         } else {
-            // PNG mendukung transparansi
             link.href = canvas.toDataURL('image/png');
             link.download = `${filename}.png`;
         }
