@@ -67,7 +67,7 @@ body {
 }
 
 #ihk-chart, #mtm-chart, #yoy-chart, #ytd-chart {
-    height: 80px; /* Reduced chart height */
+    height: 100%; /* Reduced chart height */
     width: 100%;
 }
 
@@ -95,11 +95,20 @@ body {
 .chart-container {
     max-width: 130px; /* Use max-width instead of fixed width */
     width: 100%; /* Allow it to take full width up to max-width */
-    height: 100px; /* Reduced height for compactness */
+    height: 0; /* Reduced height for compactness */
+    padding-bottom: 33.33%; /*  Maintain a 3:1 aspect ratio */
     margin-top: 0; /* Remove auto margin, as it's row-aligned */
     flex-shrink: 1; /* Allow it to shrink if space is limited */
     min-width: 0; /* Allow the container to shrink beyond its intrinsic content size if needed */
     position: relative; /* For canvas sizing within */
+}
+
+.chart-container > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* New: Container for value and description text */
@@ -108,6 +117,7 @@ body {
     flex-direction: column;
     flex-grow: 1; /* Allows text column to take available width */
     margin-right: 1rem; /* Space between text and chart */
+    justify-content: center; /* Vertically align the text */
 }
 
 /* New: Container for value, description, and chart */
@@ -115,7 +125,7 @@ body {
     display: flex;
     flex-direction: row; /* Arranges text and chart side-by-side */
     justify-content: space-between; /* Pushes chart to the right */
-    align-items: center; /* Vertically centers text and chart */
+    align-items: stretch; /* Vertically stretches items to fill the container */
     width: 100%; /* Ensure it spans the card width */
     flex-grow: 1; /* Allows this section to take available vertical space */
 }
