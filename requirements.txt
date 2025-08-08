@@ -1,8 +1,7 @@
 streamlit
-pandas 
-pygwalker
-openpyxl 
-plotly
-plotly.express
-BeautifulSoup
+pandas
+requests
+xlsxwriter
 lxml
+openpyxl
+BeautifulSoup
