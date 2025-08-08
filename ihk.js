@@ -1,141 +1,228 @@
-// Fungsi untuk mengambil data CSV dari URL
-async function fetchData(url) {
-    try {
-        const response = await fetch(url);
-        const csvText = await response.text();
-        return csvText;
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
-    }
-}
+// script.js
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Dashboard script loaded!');
 
-// Fungsi untuk mem-parse data CSV
-function parseCSV(csvText) {
-    const lines = csvText.split("\n");
-    const headers = lines[0].split(","); // Ambil header
-    const data = [];
+    const metricCards = document.querySelectorAll('.metric-card');
+    const sheetUrl = "https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/ihk.csv"; // URL CSV
 
-    for (let i = 1; i < lines.length; i++) { // Mulai dari baris kedua (setelah header)
-        const values = lines[i].split(",");
-        if (values.length === headers.length) { // Validasi jumlah kolom
-            const entry = {};
-            for (let j = 0; j < headers.length; j++) {
-                entry[headers[j].trim()] = values[j].trim(); // trim untuk menghilangkan whitespace
-            }
-            data.push(entry);
+    // Fungsi untuk mengambil data CSV dari URL
+    async function fetchData(url) {
+        try {
+            // Menggunakan server-side proxy (ganti dengan URL proxy Anda)
+            const response = await fetch('http://localhost:3000/sheetdata');  //Asumsi Proxy ada di localhost:3000
+            const csvText = await response.text();
+            return csvText;
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return null;
         }
     }
-    return data;
-}
 
+    // Fungsi untuk mem-parse data CSV
+    function parseCSV(csvText) {
+        const lines = csvText.split("\n");
+        const headers = lines[0].split(",").map(header => header.trim()); // Ambil header dan trim
+        const data = [];
 
-// Fungsi untuk membuat metric card dan line chart
-function createMetricCard(containerId, title, value, bulan, chartData, chartLabels) {
-    const container = document.getElementById(containerId);  //Contoh dengan DOM API biasa
-    if (!container) {
-        console.error(`Container with ID "${containerId}" not found.`);
-        return;
-    }
-
-    // Bersihkan container (jika sudah ada isinya)
-    container.innerHTML = "";
-
-    // Judul Metric Card
-    const titleElement = document.createElement("h2");
-    titleElement.textContent = title;
-    container.appendChild(titleElement);
-
-    // Elemen untuk menampilkan nilai metric
-    const valueElement = document.createElement("div");
-    valueElement.textContent = value;
-    valueElement.classList.add("value"); // Tambahkan class CSS
-    container.appendChild(valueElement);
-
-    // Elemen untuk menampilkan bulan (keterangan)
-    const bulanElement = document.createElement("div");
-    bulanElement.textContent = `Bulan: ${bulan}`;
-    bulanElement.classList.add("bulan"); // Tambahkan class CSS
-    container.appendChild(bulanElement);
-
-
-    //Elemen Canvas untuk Chart
-    const canvas = document.createElement('canvas');
-    container.appendChild(canvas);
-
-    // Inisialisasi Chart.js (atau library charting pilihan Anda)
-    const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartLabels,
-            datasets: [{
-                label: title,
-                data: chartData,
-                borderColor: 'blue',
-                borderWidth: 1,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(",").map(value => value.trim()); // Ambil values dan trim
+            if (values.length === headers.length) {
+                const entry = {};
+                for (let j = 0; j < headers.length; j++) {
+                    entry[headers[j]] = values[j];
                 }
+                data.push(entry);
             }
         }
-    });
-}
+        return data;
+    }
+
+    // Fungsi untuk merender chart
+    const renderChart = (chartContainer, lineColor, chartData, chartLabels) => {
+        const options = {
+            chart: {
+                type: 'line',
+                height: '100%',
+                width: '100%',
+                toolbar: {
+                    show: false
+                },
+                sparkline: {
+                    enabled: true
+                }
+            },
+            series: [{
+                data: chartData
+            }],
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            colors: [lineColor],
+            tooltip: {
+                enabled: true,
+                theme: 'dark',
+                x: {
+                    show: true,
+                    formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
+                        return chartLabels[dataPointIndex];
+                    }
+                },
+                y: {
+                    formatter: function (val) {
+                        return val;
+                    }
+                }
+            },
+            grid: {
+                show: false,
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                }
+            },
+            xaxis: {
+                categories: chartLabels,
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                labels: {
+                    show: false
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            }
+        };
+
+        const chart = new ApexCharts(chartContainer, options);
+        chart.render();
+    };
+
+    async function initializeDashboard() {
+        const csvText = await fetchData(sheetUrl);
+
+        if (csvText) {
+            const data = parseCSV(csvText);
+
+            // Pastikan ada data
+            if (data.length === 0) {
+                console.warn("No data found in CSV");
+                return;
+            }
+
+            // Ambil 5 bulan terakhir (atau kurang jika data kurang dari 5 bulan)
+            const lastFiveMonths = data.slice(0, 5); // Ambil 5 data teratas
+            const chartLabels = lastFiveMonths.map(item => item["Bulan"]).reverse(); //Ambil Label dan REVERSE
+            const latestData = data[0]; // Data Terbaru
+
+            // Prepare chart data
+            const ihkChartData = lastFiveMonths.map(item => parseFloat(item["IHK"])).reverse();
+            const inflasiMtMChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi MtM"].replace("%", ""))).reverse(); //Hilangkan simbol persen
+            const inflasiYoYChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi YoY"].replace("%", ""))).reverse(); //Hilangkan simbol persen
+            const inflasiYtdChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi YtD"].replace("%", ""))).reverse(); //Hilangkan simbol persen
 
 
+            // Update data di dashboard
+            document.querySelector('#ihk-metric .card-value').textContent = latestData["IHK"];
+            document.querySelector('#ihk-metric .card-description a').textContent = latestData["Bulan"];
+            document.querySelector('#inflasi-mtm-metric .card-value').textContent = latestData["Inflasi MtM"];
+            document.querySelector('#inflasi-mtm-metric .card-description a').textContent = latestData["Bulan"];
+            document.querySelector('#inflasi-yoy-metric .card-value').textContent = latestData["Inflasi YoY"];
+            document.querySelector('#inflasi-yoy-metric .card-description a').textContent = latestData["Bulan"];
+            document.querySelector('#inflasi-ytd-metric .card-value').textContent = latestData["Inflasi YtD"];
+            document.querySelector('#inflasi-ytd-metric .card-description a').textContent = latestData["Bulan"];
 
+            // Inisialisasi chart dengan data yang benar
+            renderChart(document.querySelector('#chart1'), getCardColor('#ihk-metric'), ihkChartData, chartLabels);
+            renderChart(document.querySelector('#chart2'), getCardColor('#inflasi-mtm-metric'), inflasiMtMChartData, chartLabels);
+            renderChart(document.querySelector('#chart3'), getCardColor('#inflasi-yoy-metric'), inflasiYoYChartData, chartLabels);
+            renderChart(document.querySelector('#chart4'), getCardColor('#inflasi-ytd-metric'), inflasiYtdChartData, chartLabels);
 
-// Main function
-async function main() {
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOIH0Dl54f6EKAHvwY5eMjstluFPNWXX-erkrDXlGcVMRDFZDGUdUjxtgzyD7qJWf-KX9GZ_UxVmx5/pub?gid=0&single=true&output=csv";
-    const csvText = await fetchData(url);
+            function getCardColor(selector) {
+                const cardTitleElement = document.querySelector(selector + ' .card-title');
+                const computedStyle = window.getComputedStyle(cardTitleElement);
+                return computedStyle.backgroundColor;
+            }
 
-    if (csvText) {
-        const data = parseCSV(csvText);
-
-        if (data.length > 0) {
-            // Ambil data terbaru (baris pertama setelah header)
-            const latestData = data[0];
-            const bulan = latestData["Bulan"];
-
-            // Ambil 5 bulan terakhir untuk chart
-            const lastFiveMonths = data.slice(0, 5); //Ambil 5 data teratas.  Perhatikan urutannya mungkin terbalik.
-            const chartLabels = lastFiveMonths.map(item => item["Bulan"]); //Ambil label bulan
-            // Pastikan data chart terurut dengan benar.  Jika data dari CSV terbalik, perlu dibalik.
-            chartLabels.reverse();
-
-            // Ekstrak data untuk chart
-            const ihkChartData = lastFiveMonths.map(item => parseFloat(item["IHK"]));
-            const inflasiMtMChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi MtM"]));
-            const inflasiYoYChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi YoY"]));
-            const inflasiYtdChartData = lastFiveMonths.map(item => parseFloat(item["Inflasi YtD"]));
-
-            ihkChartData.reverse(); //Balik urutan data jika perlu
-            inflasiMtMChartData.reverse();
-            inflasiYoYChartData.reverse();
-            inflasiYtdChartData.reverse();
-
-
-
-            // Buat metric cards
-            createMetricCard("ihk-metric", "IHK", latestData["IHK"], bulan, ihkChartData, chartLabels);
-            createMetricCard("inflasi-mtm-metric", "Inflasi MtM", latestData["Inflasi MtM"], bulan, inflasiMtMChartData, chartLabels);
-            createMetricCard("inflasi-yoy-metric", "Inflasi YoY", latestData["Inflasi YoY"], bulan, inflasiYoYChartData, chartLabels);
-            createMetricCard("inflasi-ytd-metric", "Inflasi YtD", latestData["Inflasi YtD"], bulan, inflasiYtdChartData, chartLabels);
-
-
-        } else {
-            console.warn("No data found in the CSV file.");
         }
     }
-}
 
-// Panggil fungsi main saat halaman dimuat
-window.onload = main;
+    initializeDashboard();
+
+    // Mobile menu toggle functionality (unchanged)
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    let menuOverlay = document.querySelector('.menu-overlay');
+
+    // Function to create and remove overlay (unchanged)
+    const toggleOverlay = (show) => {
+        if (show && !menuOverlay) {
+            menuOverlay = document.createElement('div');
+            menuOverlay.classList.add('menu-overlay');
+            document.body.appendChild(menuOverlay);
+            menuOverlay.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+                toggleOverlay(false); // Hide overlay
+            });
+        } else if (!show && menuOverlay) {
+            menuOverlay.remove();
+            menuOverlay = null; // Reset reference
+        }
+    };
+
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        toggleOverlay(navLinks.classList.contains('active'));
+    });
+
+    // Close menu when a link is clicked (for single page nav) (unchanged)
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navLinks.classList.contains('active')) {
+                menuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+                toggleOverlay(false);
+            }
+        });
+    });
+
+    // Accordion functionality (unchanged)
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionBody = header.nextElementSibling; // Get the accordion-body right after the header
+
+            // Toggle active class on the header
+            header.classList.toggle('active');
+
+            // Toggle active class on the body
+            if (accordionBody.classList.contains('active')) {
+                accordionBody.style.maxHeight = '0';
+                accordionBody.classList.remove('active');
+            } else {
+                accordionBody.style.maxHeight = accordionBody.scrollHeight + 'px';
+                accordionBody.classList.add('active');
+            }
+        });
+    });
+});
