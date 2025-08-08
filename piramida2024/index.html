@@ -17,6 +17,59 @@
       padding: 20px;
       background: #f8f9fa;
     }
+
+    /* Header Sticky */
+    .header {
+        background-color: #343a40; /* Dark background */
+        color: white;
+        padding: 1rem 0;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 100; /* Ensure it stays on top */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow for depth */
+    }
+
+    .header h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        font-weight: 600;
+    }
+
+    .header h5 {
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+
+    .header a {
+        color: #17a2b8; /* Link color */
+        text-decoration: none;
+    }
+
+    .header a:hover {
+        text-decoration: underline;
+    }
+
+    /* Style untuk Dropdown */
+    .dropdown {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .dropdown-menu {
+        background-color: #343a40; /* Warna latar belakang dropdown */
+        border: 1px solid #495057; /* Warna border */
+    }
+
+    .dropdown-item {
+        color: white; /* Warna teks */
+    }
+
+    .dropdown-item:hover {
+        background-color: #495057; /* Warna latar belakang saat hover */
+    }
+
     #content {
       display: flex;
       flex-wrap: wrap;
@@ -64,10 +117,28 @@
   </style>
 </head>
 <body>
+    <div class="header">
+        <h1 class="mb-4 text-center">Piramida Penduduk Kecamatan 2024</h1>
+        <h5 class="text-center">Sumber: <a href="https://portalpk-siga.bkkbn.go.id/tabulasi" target="_blank">Portal SIGA-BKKBN</a> | <a href="https://portalpk-siga.bkkbn.go.id/tabulasi/IK/Tabel4" target="_blank">Laki-laki</a> | <a href="https://portalpk-siga.bkkbn.go.id/tabulasi/IK/Tabel5" target="_blank">Perempuan</a></h5>
 
+        <!-- Dropdown Menu -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Data Lainnya
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="https://firmanh3200.github.io/adminduk32" target="_blank">Profil Penduduk Semester 1 2024 (HTML)</a></li>
+                <li><a class="dropdown-item" href="https://gisdukcapil32.streamlit.app/" target="_blank">Profil Penduduk Semester 1 2024 (Streamlit)</a></li>
+                <li><a class="dropdown-item" href="https://prodeskel.binapemdes.kemendagri.go.id/mpublik/" target="_blank">Prodeskel Kemendagri</a></li>
+                <li><a class="dropdown-item" href="https://portaldatadesa.jabarprov.go.id/" target="_blank">Portal Data Desa Jabar</a></li>
+                <li><a class="dropdown-item" href="https://sid.kemendesa.go.id/profile" target="_blank">SID Kemendesa</a></li>
+                <li><a class="dropdown-item" href="../kemendesa/index.html" target="_blank">Skor SDG's Desa</a></li>
+                <li><a class="dropdown-item" href="#" target="_blank">Dapodik</a></li>
+            </ul>
+        </div>
+    </div>
   <div class="container-fluid">
-    <h1 class="mb-4 text-center">Piramida Penduduk Kecamatan 2024</h1>
-    <h5 class="text-center">Sumber: https://portalpk-siga.bkkbn.go.id/tabulasi</h5>
+    
     <br><br>
 
     <div class="row mb-3 g-3 align-items-center">
@@ -128,7 +199,14 @@
       </div>
     </div>
   </div>
+  <br><br>
+  <div class="text-center">
+    <footer>
+        @fhy3273 | <a href="https://firmanh3200.github.io/mp3/" target="_blank">Dengarkan lagu Berkibar</a> | <a href="https://firmanh3200.github.io/mp3mitra/" target="_blank">Dengarkan lagu Mitra Statistik</a>
+    </footer>
+  </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     /* === PENAMBAHAN BARU: Definisi palet warna untuk setiap tema === */
     const colorThemes = {
@@ -256,14 +334,14 @@
             let title;
             if (kako && kec) {
                 dataToProcess = rawData.filter(d => d.KAKO === kako && d.KECAMATAN === kec);
-                title = `Kec. ${kec}, ${kako}`;
+                title = `KEC. ${kec}, ${kako}`;
             } else {
                 dataToProcess = rawData.filter(d => d.KAKO === kako);
-                title = `Data Agregat ${kako}`;
+                title = `${kako}`;
             }
             const aggregated = aggregateData(dataToProcess);
-            $('#table-title').text('Data Penduduk - ' + title);
-            $('#chart-title').text('Piramida Penduduk - ' + title);
+            $('#table-title').text('JUMLAH PENDUDUK - ' + title);
+            $('#chart-title').text('PIRAMIDA PENDUDUK - ' + title);
             renderDataTable(aggregated);
             renderPyramid(aggregated);
             hideLoaders();

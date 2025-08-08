@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skor SDG's Desa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { font-family: sans-serif; }
+        .container { margin-top: 20px; }
+        .warning { color: darkgoldenrod; }
+        .success { color: green; }
+        .error { color: red; }
+        .dataframe { width: 100%; border-collapse: collapse; }
+        .dataframe th, .dataframe td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .dataframe th { background-color: #f2f2f2; }
+        .dataframe tr:nth-child(even) { background-color: #f9f9f9; }
+        .green-divider {
+            border: none;
+            height: 3px;
+            background-color: green;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Skor SDG's Desa</h1>
+        <p class="warning">Sumber: <a href="https://sid.kemendesa.go.id/profile" target="_blank">https://sid.kemendesa.go.id/profile</a>, Kondisi: <span id="tanggal-hari-ini"></span></p>
+        <hr class="green-divider">
+
+        <label for="idkab">Filter ID Kabupaten/Kota:</label>
+        <select class="form-control" id="idkab"></select>
+
+        <label for="nmkecamatan">Filter Kecamatan:</label>
+        <select class="form-control" id="nmkecamatan"></select>
+
+        <label for="nmdesa">Filter Desa:</label>
+        <select class="form-control" id="nmdesa"></select>
+
+        <div id="data-container"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Set tanggal hari ini
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+            today = dd + '-' + mm + '-' + yyyy;
+            $('#tanggal-hari-ini').text(today);
+
+            var mfd = [];
+            var df = [];
+            var df2 = [];
+
+            // Load data from CSV
+            $.ajax({
+                type: "GET",
+                url: "data/mfd_23_1_32.csv",
+                dataType: "text",
+                success: function(data) {
+                    mfd = $.csv.toObjects(data);
+                    populateKabupaten(mfd);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading CSV:", status, error);
+                    $('#data-container').html('<p class="error">Gagal memuat data CSV.</p>');
+                }
+            });
+
+            // Function to parse CSV to JSON
+            $.csv = {
+                toObjects: function(data) {
+                    var lines = data.replace('\r','').split("\n");
+                    var result = [];
+                    var headers = lines[0].split(",");
+
+                    for (var i = 1; i < lines.length; i++) {
+                        var obj = {};
+                        var currentline = lines[i].split(",");
+
+                        for (var j = 0; j < headers.length; j++) {
+                            obj[headers[j].trim()] = currentline[j] ? currentline[j].trim() : '';
+                        }
+                        result.push(obj);
+                    }
+                    return result;
+                }
+            };
+
+            function populateKabupaten(mfd) {
+                var datakab = [...new Set(mfd.map(item => '32' + item.kdkab))];
+                var selectKab = $('#idkab');
+                selectKab.empty();
+                datakab.forEach(kab => {
+                    selectKab.append($('<option>', {
+                        value: kab,
+                        text: kab
+                    }));
+                });
+
+                selectKab.off('change').on('change', function() {
+                    var kabterpilih = $(this).val();
+                    populateKecamatan(kabterpilih);
+                });
+            }
+
+            function populateKecamatan(kabterpilih) {
+                var url = "https://sid.kemendesa.go.id/region/selected?code=" + kabterpilih + "&param=district";
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        df = data;
+                        var selectKec = $('#nmkecamatan');
+                        selectKec.empty();
+                        df.sort((a, b) => a.kdkecamatan.localeCompare(b.kdkecamatan));
+                        df.forEach(kec => {
+                            selectKec.append($('<option>', {
+                                value: kec.nmkecamatan_kemendesa,
+                                text: kec.nmkecamatan_kemendesa
+                            }));
+                        });
+
+                        selectKec.off('change').on('change', function() {
+                            var datakec = $(this).val();
+                            var kecterpilih = df.find(kec => kec.nmkecamatan_kemendesa === datakec).kdkecamatan;
+                            populateDesa(kecterpilih);
+                        });
+                    },
+                    error: function() {
+                        $('#data-container').html('<p class="error">Gagal memuat data kecamatan.</p>');
+                    }
+                });
+            }
+
+            function populateDesa(kecterpilih) {
+                var url = "https://sid.kemendesa.go.id/region/selected?code=" + kecterpilih + "&param=village";
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        df2 = data;
+                        var selectDesa = $('#nmdesa');
+                        selectDesa.empty();
+                        df2.sort((a, b) => a.kddesa.localeCompare(b.kddesa));
+                        df2.forEach(desa => {
+                            selectDesa.append($('<option>', {
+                                value: desa.nmdesa_kemendesa,
+                                text: desa.nmdesa_kemendesa
+                            }));
+                        });
+
+                        selectDesa.off('change').on('change', function() {
+                            var pilihandesa = $(this).val();
+                            var desaterpilih = df2.find(desa => desa.nmdesa_kemendesa === pilihandesa).kddesa;
+                            showSDGSScore(desaterpilih);
+                        });
+                    },
+                    error: function() {
+                        $('#data-container').html('<p class="error">Gagal memuat data desa.</p>');
+                    }
+                });
+            }
+
+            function showSDGSScore(desaterpilih) {
+                var kabterpilih = $('#idkab').val();
+                var datakec = $('#nmkecamatan').val();
+                 var kecterpilih = df.find(kec => kec.nmkecamatan_kemendesa === datakec).kdkecamatan;
+                var pilihandesa = $('#nmdesa').val();
+                var url2 = "https://sid.kemendesa.go.id/sdgs/searching/score-sdgs?location_code=&province_id=32&city_id=" + kabterpilih + "&district_id=" + kecterpilih + "&village_id=" + desaterpilih;
+
+                $.ajax({
+                    url: url2,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response && response.data) {
+                            var filtered_data = response.data.map(item => ({
+                                goals: item.goals,
+                                title: item.title,
+                                score: item.score
+                            }));
+                            
+                            var table = '<p class="success">Skor SDGs ' + pilihandesa + '</p>';
+                            table += '<table class="dataframe">';
+                            table += '<thead><tr><th>Goals</th><th>Title</th><th>Score</th></tr></thead><tbody>';
+                            filtered_data.forEach(item => {
+                                table += '<tr>';
+                                table += '<td>' + item.goals + '</td>';
+                                table += '<td>' + item.title + '</td>';
+                                table += '<td>' + item.score + '</td>';
+                                table += '</tr>';
+                            });
+                            table += '</tbody></table>';
+                            $('#data-container').html(table);
+                        } else {
+                            $('#data-container').html('<p class="error">Data Belum Tersedia</p>');
+                        }
+                    },
+                    error: function() {
+                        $('#data-container').html('<p class="error">Gagal memuat data SDGs.</p>');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
