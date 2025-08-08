@@ -4,4 +4,4 @@ requests
 xlsxwriter
 lxml
 openpyxl
-BeautifulSoup
+bs4
