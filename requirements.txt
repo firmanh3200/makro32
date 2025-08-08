@@ -4,3 +4,5 @@ pygwalker
 openpyxl 
 plotly
 plotly.express
+BeautifulSoup
+lxml
