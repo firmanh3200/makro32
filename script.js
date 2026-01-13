@@ -1,3 +1,5 @@
+// script.js
+
 // Remove Chart.js imports
 // import { Chart, registerables } from 'chart.js';
 
@@ -356,9 +358,11 @@ document.addEventListener('DOMContentLoaded', () => {
             menuOverlay = document.createElement('div');
             menuOverlay.classList.add('menu-overlay');
             document.body.appendChild(menuOverlay);
+            
+            // FIX: Check if navLinks exists before adding event listener
             menuOverlay.addEventListener('click', () => {
-                menuToggle.classList.remove('active');
-                navLinks.classList.remove('active');
+                if (menuToggle) menuToggle.classList.remove('active');
+                if (navLinks) navLinks.classList.remove('active');
                 toggleOverlay(false); // Hide overlay
             });
         } else if (!show && menuOverlay) {
@@ -367,22 +371,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        navLinks.classList.toggle('active');
-        toggleOverlay(navLinks.classList.contains('active'));
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            if (navLinks) navLinks.classList.toggle('active');
+            toggleOverlay(navLinks && navLinks.classList.contains('active'));
+        });
+    }
 
     // Close menu when a link is clicked (for single page nav)
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (navLinks.classList.contains('active')) {
-                menuToggle.classList.remove('active');
-                navLinks.classList.remove('active');
-                toggleOverlay(false);
-            }
+    // FIX: Wrap in if statement to prevent error if navLinks is null (commented out)
+    if (navLinks) {
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) {
+                    if (menuToggle) menuToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    toggleOverlay(false);
+                }
+            });
         });
-    });
+    }
 
     // Accordion functionality
     const accordionHeaders = document.querySelectorAll('.accordion-header');
@@ -390,6 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
     accordionHeaders.forEach(header => {
         header.addEventListener('click', () => {
             const accordionBody = header.nextElementSibling; // Get the accordion-body right after the header
+
+            // FIX: Check if accordionBody exists
+            if (!accordionBody) return;
 
             // Toggle active class on the header
             header.classList.toggle('active');
@@ -399,8 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 accordionBody.style.maxHeight = '0';
                 accordionBody.classList.remove('active');
             } else {
-                accordionBody.style.maxHeight = accordionBody.scrollHeight + 'px';
+                // FIX: Add class FIRST to apply padding, then calculate height
                 accordionBody.classList.add('active');
+                accordionBody.style.maxHeight = accordionBody.scrollHeight + 'px';
             }
         });
     });
