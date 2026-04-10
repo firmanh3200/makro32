@@ -169,12 +169,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
-    const ihkCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/ihk.csv';
-    const ntpCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/ntp.csv';
-    const pariwisataCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/pariwisata.csv';
-    const transportasiCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/transportasi.csv';
-    const eximCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/exim.csv';
+    // const ihkCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/ihk.csv';
+    // const ntpCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/ntp.csv';
+    // const pariwisataCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/pariwisata.csv';
+    // const transportasiCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/transportasi.csv';
+    // const eximCsvUrl = 'https://raw.githubusercontent.com/firmanh3200/makro32/refs/heads/main/data/exim.csv';
 
+    // Menggunakan jsDelivr CDN untuk menghindari error SSL Certificate
+    const ihkCsvUrl = 'https://cdn.jsdelivr.net/gh/firmanh3200/makro32@main/data/ihk.csv';
+    const ntpCsvUrl = 'https://cdn.jsdelivr.net/gh/firmanh3200/makro32@main/data/ntp.csv';
+    const pariwisataCsvUrl = 'https://cdn.jsdelivr.net/gh/firmanh3200/makro32@main/data/pariwisata.csv';
+    const transportasiCsvUrl = 'https://cdn.jsdelivr.net/gh/firmanh3200/makro32@main/data/transportasi.csv';
+    const eximCsvUrl = 'https://cdn.jsdelivr.net/gh/firmanh3200/makro32@main/data/exim.csv';// Menggunakan jsDelivr CDN untuk menghindari error SSL Certificate
+    
     let initializedCharts = []; // Keep track of charts initialized by CSV data
 
     // Helper function to update card values and charts
