@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let baseValue;
                 let variance;
-                const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']; // Default labels for random charts
+                const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des']; // Default labels for random charts
 
                 // Map the actual chart ID to the specific metric for data generation
                 // Note: Charts 1-7 and 9-15 are now handled by CSV.
